@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="80dp">
+
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/userImageView"
+        android:src="@drawable/ic_user_default"
+        android:scaleType="fitStart"
+        android:layout_marginRight="@dimen/userpic_right_margin"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Name Lastname"
+            android:id="@+id/nameTextView"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/post_list_top_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Nothing from Name for the whole day. Cheer up your friend!"
+            android:id="@+id/feelingTextView"
+            android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cheer up"
+            android:id="@+id/cheerUpButton" />
+
+
+    </LinearLayout>
+</LinearLayout>

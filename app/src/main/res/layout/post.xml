@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="80dp">
+
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/userpicImageView"
+        android:src="@drawable/ic_user_default"
+        android:scaleType="fitStart"
+        android:layout_marginRight="@dimen/userpic_right_margin"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10 Oct 2015 10:15"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/timestampTextView"
+            android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Name Lastname"
+            android:id="@+id/nameTextView"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/post_list_top_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="I feel great"
+            android:id="@+id/feelingTextView"
+            android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sugar: 6.0"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/sugarTextView"
+            android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Insulin: took"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/insulinTextView"
+            android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Physical Activity: walked 2 miles"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/physicalActivityTextView"
+            android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Like"
+                android:id="@+id/likeButton" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Say something"
+                android:id="@+id/cheerUpButton" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</LinearLayout>
