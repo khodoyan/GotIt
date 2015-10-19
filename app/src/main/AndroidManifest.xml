@@ -33,6 +33,7 @@
         </activity>
         <activity
             android:name=".view.CheckinActivity"
+            android:parentActivityName=".view.MainActivity"
             android:label="@string/title_checkin_activity" >
         </activity>
         <activity android:name=".view.MyPosts"

@@ -39,7 +39,10 @@ public class Post implements ToContentValues {
         values.put(PostContract.Columns.DELETED_AT, deletedAt);
         values.put(PostContract.Columns.TIMESTAMP, timestamp);
         values.put(PostContract.Columns.IS_SHARED, (isShared) ? 1 : 0);
-        values.put(PostContract.Columns.FEELING, feeling.toString());
+        String feelingString = "";
+        if (feeling != null)
+            feelingString = feeling.toString();
+        values.put(PostContract.Columns.FEELING, feelingString);
         values.put(PostContract.Columns.BLOOD_SUGAR, bloodSugar);
         values.put(PostContract.Columns.ADMINISTERED_INSULIN, (administeredInsulin) ? 1 : 0);
         values.put(PostContract.Columns.QUESTIONNAIRE, questionnaire.toJson());
@@ -278,7 +281,7 @@ public class Post implements ToContentValues {
     }
 
     public boolean isBlank() {
-        return (bloodSugar== 0f && feeling == Feeling.OKAY && !administeredInsulin &&
+        return (bloodSugar== 0f && feeling == null && !administeredInsulin &&
                 questionnaire.isBlank());
     }
 

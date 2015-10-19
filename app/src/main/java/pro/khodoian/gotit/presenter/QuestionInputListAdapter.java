@@ -100,4 +100,11 @@ public class QuestionInputListAdapter extends BaseAdapter {
         }
         return resultView;
     }
+
+    public int add(Question question) {
+        if (questionnaire.add(question))
+            return questionnaire.size() - 1;
+        else
+            return -1;
+    }
 }

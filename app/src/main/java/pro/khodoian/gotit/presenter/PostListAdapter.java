@@ -135,6 +135,7 @@ public class PostListAdapter extends BaseAdapter {
                 }
             } else {
                     holder.feeling.setVisibility(View.INVISIBLE);
+                    holder.feeling.setHeight(0);
                 }
 
             // blood sugar
@@ -154,9 +155,10 @@ public class PostListAdapter extends BaseAdapter {
             // set insulin
             holder.insulin =
                     (TextView) resultView.findViewById(R.id.postInsulinTextView);
-            if (!post.isAdministeredInsulin())
+            if (!post.isAdministeredInsulin()) {
                 holder.insulin.setVisibility(View.INVISIBLE);
-            holder.insulin.setHeight(0);
+                holder.insulin.setHeight(0);
+            }
 
             // set list of questions
             holder.questions =

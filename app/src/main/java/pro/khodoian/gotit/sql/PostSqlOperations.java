@@ -5,7 +5,9 @@ import android.content.Context;
 import pro.khodoian.gotit.models.Post;
 
 /**
- * Created by eduardkhodoyan on 10/17/15.
+ * Class manages SQL operations with questions table
+ *
+ * @author eduardkhodoyan
  */
 public class PostSqlOperations extends SqlOperations {
     public PostSqlOperations(Context context) {

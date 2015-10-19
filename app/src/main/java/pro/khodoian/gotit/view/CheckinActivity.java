@@ -2,12 +2,17 @@ package pro.khodoian.gotit.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -21,6 +26,9 @@ import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.models.Question;
 import pro.khodoian.gotit.models.Questionnaire;
 import pro.khodoian.gotit.presenter.QuestionInputListAdapter;
+import pro.khodoian.gotit.sql.QuestionContract;
+import pro.khodoian.gotit.sql.QuestionSqlOperations;
+import pro.khodoian.gotit.sql.SqlOperations;
 
 public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTask.Callback {
 
@@ -33,7 +41,6 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
 
     private boolean isBackPressed = false;
 
-    private FloatingActionButton fab;
     LinearLayout listLinearLayout;
     EditText bloodSugarEditText;
     Switch administeredInsulinSwitch;
@@ -41,8 +48,10 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
     RadioButton okayRadio;
     RadioButton badRadio;
     Switch isSharedSwitch;
+    CheckBox addDefaultQuestionCheckBox;
 
     CoordinatorLayout parentLayout;
+    QuestionInputListAdapter adapter;
 
 
     @Override
@@ -50,35 +59,56 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkin);
 
+        // Turn on Back button on in action bar
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
         // Initialize widgets and layouts
         parentLayout = (CoordinatorLayout) findViewById(R.id.checkInParentLayout);
         listLinearLayout = (LinearLayout) findViewById(R.id.checkInListLinearLayout);
-        fab = (FloatingActionButton) findViewById(R.id.fabCheckIn);
         bloodSugarEditText = (EditText) findViewById(R.id.bloodSugarEditText);
         administeredInsulinSwitch = (Switch) findViewById(R.id.checkInAdministeredInsulinSwitch);
         goodRadio = (RadioButton) findViewById(R.id.checkInGoodRadio);
         okayRadio = (RadioButton) findViewById(R.id.checkInOkayRadio);
         badRadio = (RadioButton) findViewById(R.id.checkInBadRadio);
         isSharedSwitch = (Switch) findViewById(R.id.checkInIsSharedSwitch);
+        final EditText newQuestionEditText = (EditText) findViewById(R.id.checkInNewQuestionEditText);
+        final EditText newAnswerEditText = (EditText) findViewById(R.id.checkInNewAnswerEditText);
 
-        final QuestionInputListAdapter adapter =
+
+        addDefaultQuestionCheckBox = (CheckBox) findViewById(R.id.checkInAddDefaultCheckBox);
+        final Button addQuestionButton = (Button) findViewById(R.id.checkInAddQuestionButton);
+        addQuestionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (newQuestionEditText != null && newQuestionEditText.getText() != null
+                        && !newQuestionEditText.getText().toString().equals("")
+                        && newAnswerEditText != null && newAnswerEditText.getText() != null) {
+                    addQuestion(new Question(newQuestionEditText.getText().toString(),
+                            newAnswerEditText.getText().toString()));
+                    newQuestionEditText.setText("");
+                    newAnswerEditText.setText("");
+                }
+            }
+        });
+
+        Questionnaire defaultQuestionnaire = new Questionnaire(Questionnaire.FillType.DEFAULT);
+        Cursor cursor = new QuestionSqlOperations(this)
+                .queryAll(null, QuestionContract.Columns.ID, SqlOperations.SortOrder.ASC);
+        while (cursor.moveToNext()) {
+            defaultQuestionnaire.add(new Question(cursor.getString(
+                    cursor.getColumnIndex(QuestionContract.Columns.QUESTION))));
+        }
+
+        adapter =
                 new QuestionInputListAdapter(
                         this, // activity
-                        new Questionnaire(Questionnaire.FillType.DEFAULT_WITH_USER_DEFINED),
+                        defaultQuestionnaire,
                         true // hasHeader
                 );
         for (int i = 0; i < adapter.getCount(); i++) {
             listLinearLayout.addView(adapter.getView(i, null, listLinearLayout));
-        }
-
-        if (fab != null) {
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onFABClick();
-                }
-            });
         }
     }
 
@@ -88,40 +118,31 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
         isBackPressed = false;
     }
 
-    public static Intent makeIntent(Context context) {
-        return new Intent(context, CheckinActivity.class);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Menu is not inflated as it is replaced with the drawer
+        getMenuInflater().inflate(R.menu.checkin, menu);
+        return true;
     }
 
-    private void onFABClick() {
-        this.fab.hide();
-        Post newPost = getPost();
-        if (newPost != null && !newPost.isBlank()) {
-            new AddPostAsyncTask(this, this).execute(newPost);
-        } else {
-            if (parentLayout != null)
-                Snackbar.make(parentLayout, R.string.check_in_no_data, Snackbar.LENGTH_LONG)
-                .setAction(R.string.got_it, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // No action is required
-                    }
-                })
-                .setCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        super.onDismissed(snackbar, event);
-                        if (!fab.isShown())
-                             fab.show();
-                    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-                    @Override
-                    public void onShown(Snackbar snackbar) {
-                        super.onShown(snackbar);
-                        if (fab.isShown())
-                            fab.hide();
-                    }
-                }).show();
+        if (item.getItemId() == R.id.action_send) {
+            Post newPost = CheckinActivity.this.getPost();
+            if (newPost != null && !newPost.isBlank()) {
+                new AddPostAsyncTask(this, this).execute(newPost);
+            } else {
+                if (parentLayout != null)
+                    Snackbar.make(parentLayout, R.string.check_in_no_data, Snackbar.LENGTH_LONG)
+                            .show();
+            }
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public static Intent makeIntent(Context context) {
+        return new Intent(context, CheckinActivity.class);
     }
 
     private Post getPost() {
@@ -186,7 +207,7 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
             if (badRadio.isChecked())
                 return Post.Feeling.BAD;
         }
-        return Post.Feeling.OKAY;
+        return null;
     }
 
     private boolean isShared() {
@@ -216,8 +237,30 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
     @Override
     public void onPostAddedFailed() {
         if (!isBackPressed)
-            Toast.makeText(this, R.string.cant_add_post, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.cant_add_post, Toast.LENGTH_LONG)
+                    .show();
         isBackPressed = false;
         setResult(FAILED);
+    }
+
+    public void addQuestion(Question question) {
+        if (adapter != null) {
+            // add to screen
+            int newQuestionId = adapter.add(question);
+            if (newQuestionId >= 0) {
+                listLinearLayout.addView(adapter.getView(newQuestionId, null, listLinearLayout));
+            }
+
+            // add to questions db
+            if (addDefaultQuestionCheckBox != null && addDefaultQuestionCheckBox.isChecked()) {
+                QuestionSqlOperations operations = new QuestionSqlOperations(this);
+                try {
+                    operations.insert(question.toContentValues());
+                } catch (android.database.SQLException e) {
+                    Toast.makeText(this, R.string.check_in_cant_add_permanent_question,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 }

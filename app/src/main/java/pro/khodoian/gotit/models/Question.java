@@ -1,9 +1,13 @@
 package pro.khodoian.gotit.models;
 
+import android.content.ContentValues;
+
 import com.google.gson.Gson;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
+
+import pro.khodoian.gotit.sql.QuestionContract;
 
 /**
  *
@@ -48,5 +52,11 @@ public class Question {
 
     public String toJson() {
         return new Gson().toJson(new String[]{question, answer});
+    }
+
+    public ContentValues toContentValues() {
+        ContentValues result = new ContentValues();
+        result.put(QuestionContract.Columns.QUESTION, this.question);
+        return result;
     }
 }

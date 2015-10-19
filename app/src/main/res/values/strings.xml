@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Got It!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_send">Send</string>
     <string name="undo">UNDO</string>
     <string name="retry">RETRY</string>
     <string name="cant_undo">Can\'t undo action</string>
@@ -56,6 +57,13 @@
     <string name="check_in_share_with_friends">Share with friends?</string>
     <string name="check_in_no_data">No data was input, please enter any data and try again</string>
     <string name="cant_add_post">Can\'t make a check in. Please try again</string>
+    <string name="check_in_cant_add_permanent_question">Can\'t add question for future use</string>
+
+    <string name="check_in_add_new_question">Add new question</string>
+    <string name="check_in_question">Question</string>
+    <string name="check_in_answer">Answer</string>
+    <string name="check_in_add_default">Show in future posts</string>
+    <string name="check_in_add_question">Add question</string>
 
     <!-- Strings related to Post -->
     <string name="post_no_questions">Optional questions not filled</string>

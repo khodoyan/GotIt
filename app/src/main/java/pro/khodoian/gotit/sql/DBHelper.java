@@ -1,10 +1,13 @@
 package pro.khodoian.gotit.sql;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.File;
+
+import pro.khodoian.gotit.models.Questionnaire;
 
 /**
  * Database helper class based on SQLiteOpenHelper
@@ -14,7 +17,8 @@ import java.io.File;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "pro_khodoyan_gotit_db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 4;
+    Context context;
 
     public DBHelper(Context context) {
         super(
@@ -23,12 +27,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 DATABASE_VERSION
         );
+        this.context = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(UserContract.CREATE_TABLE);
         db.execSQL(PostContract.CREATE_TABLE);
+        db.execSQL(QuestionContract.CREATE_TABLE);
     }
 
     @Override
@@ -38,6 +44,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 + UserContract.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
                 + PostContract.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "
+                + QuestionContract.TABLE_NAME);
+        QuestionSqlOperations questionSqlOperations = new QuestionSqlOperations(context);
 
         onCreate(db);
     }
