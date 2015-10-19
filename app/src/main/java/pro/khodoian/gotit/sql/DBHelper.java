@@ -14,7 +14,7 @@ import java.io.File;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "pro_khodoyan_gotit_db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public DBHelper(Context context) {
         super(
@@ -28,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(UserContract.CREATE_TABLE);
+        db.execSQL(PostContract.CREATE_TABLE);
     }
 
     @Override
@@ -35,6 +36,9 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO: for future versions, this one shall be updated
         db.execSQL("DROP TABLE IF EXISTS "
                 + UserContract.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "
+                + PostContract.TABLE_NAME);
+
         onCreate(db);
     }
 }

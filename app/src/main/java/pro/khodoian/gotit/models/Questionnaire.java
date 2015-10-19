@@ -13,7 +13,18 @@ import java.util.HashMap;
  */
 public class Questionnaire {
     public static final Question[] DEFAULT_QUESTIONS = {
-            new Question("Physical activity")
+            new Question("Physical activity"),
+            new Question("Any other question for testing"),
+            new Question("Another question 1"),
+            new Question("Another question 2"),
+            new Question("Another question 3"),
+            new Question("Another question 4"),
+            new Question("Another question 5"),
+            new Question("Another question 6"),
+            new Question("Another question 7"),
+            new Question("Another question 8"),
+            new Question("Another question 9"),
+            new Question("Another question 10"),
             // TODO: Make up list of default questions
     };
 
@@ -32,11 +43,13 @@ public class Questionnaire {
 
     public Questionnaire(String jsonString) {
         Gson gson = new Gson();
-        arrayList = (ArrayList<Question>) gson.fromJson(jsonString, new TypeToken<ArrayList<Question>>(){}.getType());
+        arrayList = (ArrayList<Question>) gson.fromJson(jsonString,
+                new TypeToken<ArrayList<Question>>(){}.getType());
         hashMap = new HashMap<>();
         if(arrayList != null) {
             for (int i = 0; i < arrayList.size(); i++) {
-                hashMap.put(arrayList.get(i).getQuestion(), i);
+                if (arrayList.get(i) != null)
+                    hashMap.put(arrayList.get(i).getQuestion(), i);
             }
         }
     }
@@ -153,6 +166,19 @@ public class Questionnaire {
     }
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return new Gson().toJson(arrayList);
+    }
+
+    public int size() {
+        return arrayList.size();
+    }
+
+    public boolean isBlank() {
+        boolean result = true;
+        for (Question question : arrayList) {
+            if (question != null)
+                result = question.getAnswer().equals("");
+        }
+        return result;
     }
 }

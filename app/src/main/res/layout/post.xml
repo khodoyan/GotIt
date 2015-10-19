@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:minHeight="80dp">
 
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/userpicImageView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/postUserpicImageView"
         android:src="@drawable/ic_user_default"
         android:scaleType="fitStart"
         android:layout_marginRight="@dimen/userpic_right_margin"
@@ -17,56 +17,71 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="10 Oct 2015 10:15"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/timestampTextView"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/postTimestampTextView"
             android:layout_marginTop="@dimen/post_list_top_margin" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/black"
             android:text="Name Lastname"
-            android:id="@+id/nameTextView"
+            android:id="@+id/postNameTextView"
             android:textStyle="bold"
             android:layout_marginTop="@dimen/post_list_top_margin"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/black"
             android:text="I feel great"
-            android:id="@+id/feelingTextView"
+            android:id="@+id/postFeelingTextView"
             android:layout_marginTop="@dimen/post_list_top_margin" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BloodSugar: "
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/postSugarTextView"
+                 />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1.0"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/postSugarValueTextView"
+                />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sugar: 6.0"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/sugarTextView"
-            android:layout_marginTop="@dimen/post_list_top_margin" />
+            android:text="Administered insulin"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/postInsulinTextView"
+             />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Insulin: took"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/insulinTextView"
-            android:layout_marginTop="@dimen/post_list_top_margin" />
+            android:orientation="vertical"
+            android:id="@+id/postQuestionsList">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Physical Activity: walked 2 miles"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/physicalActivityTextView"
-            android:layout_marginTop="@dimen/post_list_top_margin" />
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -78,14 +93,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Like"
-                android:id="@+id/likeButton" />
+                android:id="@+id/postLikeButton" />
 
             <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Say something"
-                android:id="@+id/cheerUpButton" />
+                android:id="@+id/postCheerUpButton" />
         </LinearLayout>
 
 

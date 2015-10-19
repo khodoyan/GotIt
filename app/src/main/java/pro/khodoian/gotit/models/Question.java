@@ -38,6 +38,14 @@ public class Question {
         return this.answer;
     }
 
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
     public String toJson() {
         return new Gson().toJson(new String[]{question, answer});
     }

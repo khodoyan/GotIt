@@ -15,6 +15,10 @@ public class SqlOperations {
     String tableName;
     String idColumn;
 
+    public enum SortOrder {
+        ASC, DESC
+    }
+
     public SqlOperations(Context context, String tableName, String idColumn) {
         dbHelper = new DBHelper(context);
         this.tableName = tableName;
@@ -86,7 +90,7 @@ public class SqlOperations {
      * @return Cursor resulting from the query
      */
     public Cursor query(String[] columns, String selection, String[] selectionArgs,
-                        String orderBy, String limit) {
+                        String orderBy, SortOrder order, String limit) {
         // Check if DBHelper initialized properly
         if (dbHelper == null)
             throw new android.database.SQLException ("Failed to query from database");
@@ -97,7 +101,7 @@ public class SqlOperations {
                 selectionArgs, // selection arguments to be set instead of ? above
                 null, // GROUP BY
                 null, // HAVING
-                orderBy, // ORDER BY
+                orderBy + " " + order.toString(), // ORDER BY
                 limit
         );
     }
@@ -117,11 +121,12 @@ public class SqlOperations {
         if (dbHelper == null)
             throw new android.database.SQLException ("Failed to query from database");
         return query(
-                columns,
-                idColumn + " = ?",
-                new String[]{String.valueOf(id)},
-                null,
-                String.valueOf(1)
+                columns, // projections
+                idColumn + " = ?", // selection
+                new String[]{String.valueOf(id)}, // selectionArgs
+                null, // OrderBy
+                SortOrder.ASC, // SortOrder
+                String.valueOf(1) // Limit
         );
     }
 
@@ -137,8 +142,8 @@ public class SqlOperations {
      *                unordered
      * @return Cursor with all records from the table
      */
-    public Cursor queryAll(String[] columns, String orderBy) {
-        return query(columns, null, null, orderBy, null);
+    public Cursor queryAll(String[] columns, String orderBy, SortOrder order) {
+        return query(columns, null, null, orderBy, order, null);
     }
 
     /**

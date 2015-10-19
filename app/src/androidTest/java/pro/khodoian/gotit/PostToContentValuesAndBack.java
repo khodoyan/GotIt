@@ -46,7 +46,7 @@ public class PostToContentValuesAndBack extends TestCase {
     }
 
     @Test
-    public void testQuestionnaireToJsonAndBack() throws Exception{
+    public void testPostToCvsAndBack() throws Exception{
         ContentValues values = samplePost.toContentValues();
         Post post = new Post(values);
         assertEquals("User1", post.getUsername());

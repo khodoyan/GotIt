@@ -1,6 +1,7 @@
 package pro.khodoian.gotit.models;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -62,6 +63,9 @@ public class Post implements ToContentValues {
                 break;
             case "GOOD":
                 feeling = Feeling.GOOD;
+                break;
+            default:
+                feeling = null;
         }
         bloodSugar = values.getAsFloat(PostContract.Columns.BLOOD_SUGAR);
         administeredInsulin = (values.getAsInteger(PostContract.Columns.ADMINISTERED_INSULIN) == 1);
@@ -101,6 +105,78 @@ public class Post implements ToContentValues {
         this.bloodSugar = bloodSugar;
         this.administeredInsulin = (administeredInsulin == 1);
         this.questionnaire = new Questionnaire(questionnaireJsonString);
+    }
+
+    public static Post makePost(Cursor cursor) {
+        boolean returnNull = false;
+        Post result = new Post();
+        if (cursor.getColumnIndex(PostContract.Columns.ID) >= 0)
+            result.id = cursor.getLong(cursor.getColumnIndex(PostContract.Columns.ID));
+        else
+            returnNull = true;
+
+        if (cursor.getColumnIndex(PostContract.Columns.SERVER_ID) >= 0)
+            result.serverId = cursor.getLong(cursor.getColumnIndex(PostContract.Columns.SERVER_ID));
+        else
+            result.serverId = -1;
+
+        if (cursor.getColumnIndex(PostContract.Columns.USERNAME) >= 0)
+            result.username = cursor.getString(cursor.getColumnIndex(PostContract.Columns.USERNAME));
+        else
+            returnNull = true;
+
+        if (cursor.getColumnIndex(PostContract.Columns.UPDATED_AT) >= 0)
+            result.updatedAt = cursor.getLong(cursor.getColumnIndex(PostContract.Columns.UPDATED_AT));
+        else
+            result.updatedAt = 0;
+
+        if (cursor.getColumnIndex(PostContract.Columns.DELETED_AT) >= 0)
+            result.deletedAt = cursor.getLong(cursor.getColumnIndex(PostContract.Columns.DELETED_AT));
+        else
+            result.deletedAt = 0;
+
+        if (cursor.getColumnIndex(PostContract.Columns.TIMESTAMP) >= 0)
+            result.timestamp = cursor.getLong(cursor.getColumnIndex(PostContract.Columns.TIMESTAMP));
+        else
+            returnNull = true;
+
+        if (cursor.getColumnIndex(PostContract.Columns.IS_SHARED) >= 0)
+            result.isShared = (cursor.getInt(cursor.getColumnIndex(PostContract.Columns.IS_SHARED)) == 1);
+        else
+            result.isShared = false;
+
+        if (cursor.getColumnIndex(PostContract.Columns.FEELING) >= 0)
+            switch (cursor.getString(cursor.getColumnIndex(PostContract.Columns.FEELING))) {
+                case "GOOD":
+                    result.feeling = Feeling.GOOD;
+                    break;
+                case "OKAY":
+                    result.feeling = Feeling.OKAY;
+                    break;
+                case "BAD":
+                    result.feeling = Feeling.BAD;
+                    break;
+                default:
+                    result.feeling = null;
+            }
+        else
+            result.feeling = null;
+
+        if (cursor.getColumnIndex(PostContract.Columns.BLOOD_SUGAR) >= 0)
+            result.bloodSugar = cursor.getFloat(cursor.getColumnIndex(PostContract.Columns.BLOOD_SUGAR));
+
+        if (cursor.getColumnIndex(PostContract.Columns.ADMINISTERED_INSULIN) >= 0)
+            result.administeredInsulin =
+                    (cursor.getInt(cursor.getColumnIndex(PostContract.Columns.ADMINISTERED_INSULIN)) == 1);
+
+        if (cursor.getColumnIndex(PostContract.Columns.QUESTIONNAIRE) >= 0)
+            result.questionnaire =
+                    new Questionnaire(cursor.getString(cursor.getColumnIndex(
+                            PostContract.Columns.QUESTIONNAIRE)));
+        if (returnNull)
+            return null;
+        else
+            return result;
     }
 
     private User user;
@@ -201,5 +277,9 @@ public class Post implements ToContentValues {
         this.user = user;
     }
 
+    public boolean isBlank() {
+        return (bloodSugar== 0f && feeling == Feeling.OKAY && !administeredInsulin &&
+                questionnaire.isBlank());
+    }
 
 }
