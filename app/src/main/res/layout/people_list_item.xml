@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/people_follow_updates_checkbox"
-                    android:id="@+id/post_list_item_follow"
+                    android:id="@+id/people_list_item_follow"
                     />
                 <TextView
                     android:layout_width="match_parent"
@@ -61,27 +61,27 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/people_feeling"
-                    android:id="@+id/post_list_item_share_feeling"
+                    android:id="@+id/people_list_item_share_feeling"
                     />
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/people_blood_sugar"
-                    android:id="@+id/post_list_item_share_blood_sugar"
+                    android:id="@+id/people_list_item_share_blood_sugar"
                     />
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/people_insulin"
-                    android:id="@+id/post_list_item_share_insulin"/>
+                    android:id="@+id/people_list_item_share_insulin"/>
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/people_questions"
-                    android:id="@+id/post_list_item_share_questions"/>
+                    android:id="@+id/people_list_item_share_questions"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

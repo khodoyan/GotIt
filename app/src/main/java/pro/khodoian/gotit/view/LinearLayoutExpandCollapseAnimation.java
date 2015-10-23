@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
  * Created by http://stackoverflow.com/users/508194/tom-esterez
  */
 public class LinearLayoutExpandCollapseAnimation {
-    public static final int DEFAULT_DURATION = 500;
+    public static final int DEFAULT_DURATION = 300;
 
     public static void expand(final View v) {
         v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -40,7 +40,8 @@ public class LinearLayoutExpandCollapseAnimation {
         };
 
         // 1dp/ms
-        a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        // a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration(DEFAULT_DURATION);
         v.startAnimation(a);
     }
 

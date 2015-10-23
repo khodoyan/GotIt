@@ -3,6 +3,7 @@ package pro.khodoian.gotit.models;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import pro.khodoian.gotit.sql.UserContract;
  * @author eduardkhodoyan
  */
 public class User implements ToContentValues {
+    private long id;
     private boolean isPatient;
     private String username;
     private String firstName;
@@ -33,6 +35,8 @@ public class User implements ToContentValues {
     private boolean shareInsulin;
     private boolean shareQuestions;
 
+    public User() {
+    }
 
     public User(boolean isPatient, String username, String firstName, String lastName,
                 long birthDay, String medicalRecordNumber, String userpicFilename,
@@ -80,8 +84,123 @@ public class User implements ToContentValues {
         this.shareQuestions = shareQuestions;
     }
 
-    public User makeUser() {
-        return null;
+    public static User makeUser(Cursor cursor) {
+        User result = new User();
+
+        if (cursor.getColumnIndex(UserContract.Columns.ID) >= 0)
+            result.id = cursor.getLong(cursor.getColumnIndex(UserContract.Columns.ID));
+        else
+            return null;
+
+        //isPatient
+        if (cursor.getColumnIndex(UserContract.Columns.IS_PATIENT) >= 0)
+            result.isPatient = (cursor.getInt(cursor.getColumnIndex(UserContract.Columns.ID)) == 1);
+        else
+            return null;
+
+        // username
+        if (cursor.getColumnIndex(UserContract.Columns.USERNAME) >= 0)
+            result.username = cursor.getString(
+                    cursor.getColumnIndex(UserContract.Columns.USERNAME));
+        else
+            return null;
+
+        // firstName
+        if (cursor.getColumnIndex(UserContract.Columns.FIRSTNAME) >= 0)
+            result.firstName = cursor.getString(
+                    cursor.getColumnIndex(UserContract.Columns.FIRSTNAME));
+        else
+            result.firstName = null;
+
+        // lastName
+        if (cursor.getColumnIndex(UserContract.Columns.LASTNAME) >= 0)
+            result.lastName = cursor.getString(
+                    cursor.getColumnIndex(UserContract.Columns.LASTNAME));
+        else
+            result.lastName = null;
+
+        // birthDay
+        if (cursor.getColumnIndex(UserContract.Columns.BIRTHDAY) >= 0)
+            result.birthDay = cursor.getLong(
+                    cursor.getColumnIndex(UserContract.Columns.BIRTHDAY));
+        else
+            result.birthDay = 0;
+
+        // medicalRecordNumber
+        if (cursor.getColumnIndex(UserContract.Columns.MEDICAL_RECORD_NUMBER) >= 0)
+            result.medicalRecordNumber = cursor.getString(
+                    cursor.getColumnIndex(UserContract.Columns.MEDICAL_RECORD_NUMBER));
+        else
+            result.medicalRecordNumber = null;
+
+        // userpicFilename
+        if (cursor.getColumnIndex(UserContract.Columns.USERPIC_FILENAME) >= 0)
+            result.userpicFilename = cursor.getString(
+                    cursor.getColumnIndex(UserContract.Columns.USERPIC_FILENAME));
+        else
+            result.userpicFilename = null;
+
+        // userpic to be assigned separately
+        result.userpic = null;
+
+        // isConfirmedByYou
+        if (cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_YOU) >= 0)
+            result.isConfirmedByYou = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_YOU)) == 1);
+        else
+            return null;
+
+        // isConfirmedByFriend
+        if (cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_FRIEND) >= 0)
+            result.isConfirmedByFriend = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_FRIEND)) == 1);
+        else
+            return null;
+
+        // isFollowed
+        if (cursor.getColumnIndex(UserContract.Columns.IS_FOLLOWED) >= 0)
+            result.isFollowed = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.IS_FOLLOWED)) == 1);
+        else
+            return null;
+
+        // shareFeeling
+        if (cursor.getColumnIndex(UserContract.Columns.SHARE_FEELING) >= 0)
+            result.shareFeeling = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.SHARE_FEELING)) == 1);
+        else
+            return null;
+
+        // shareBloodSugar
+        if (cursor.getColumnIndex(UserContract.Columns.SHARE_BLOOD_SUGAR) >= 0)
+            result.shareBloodSugar = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.SHARE_BLOOD_SUGAR)) == 1);
+        else
+            return null;
+
+        // shareInsulin
+        if (cursor.getColumnIndex(UserContract.Columns.SHARE_INSULIN) >= 0)
+            result.shareInsulin = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.SHARE_INSULIN)) == 1);
+        else
+            return null;
+
+        // shareQuestions
+        if (cursor.getColumnIndex(UserContract.Columns.SHARE_QUESTIONS) >= 0)
+            result.shareQuestions = (cursor.getInt(
+                    cursor.getColumnIndex(UserContract.Columns.SHARE_QUESTIONS)) == 1);
+        else
+            return null;
+
+        return result;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public boolean isPatient() {
@@ -234,6 +353,13 @@ public class User implements ToContentValues {
         values.put(UserContract.Columns.SHARE_INSULIN, this.shareInsulin ? 1 : 0);
         values.put(UserContract.Columns.SHARE_QUESTIONS, this.shareQuestions ? 1 : 0);
         return values;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("User{username=%s; full name = %s}", new String[]{
+                this.username, this.getFullName()
+        });
     }
 
     public static ArrayList<User> getSampleUsersList(Activity activity) {

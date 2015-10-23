@@ -1,6 +1,8 @@
 package pro.khodoian.gotit.presenter;
 
 import android.app.Activity;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +13,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.User;
+import pro.khodoian.gotit.sql.UserSqlOperations;
 import pro.khodoian.gotit.view.LinearLayoutExpandCollapseAnimation;
 
 /**
@@ -101,15 +104,15 @@ public class PeopleListAdapter extends BaseAdapter {
             holder.name =
                     (TextView) resultView.findViewById(R.id.people_list_item_name);
             holder.isFollowed =
-                    (CheckBox) resultView.findViewById(R.id.post_list_item_follow);
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_follow);
             holder.shareFeeling =
-                    (CheckBox) resultView.findViewById(R.id.post_list_item_share_feeling);
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_feeling);
             holder.shareBloodSugar =
-                    (CheckBox) resultView.findViewById(R.id.post_list_item_share_blood_sugar);
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_blood_sugar);
             holder.shareInsulin =
-                    (CheckBox) resultView.findViewById(R.id.post_list_item_share_insulin);
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_insulin);
             holder.shareQuestions =
-                    (CheckBox) resultView.findViewById(R.id.post_list_item_share_questions);
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_questions);
             holder.settingsLayout =
                     (LinearLayout) resultView.findViewById(R.id.people_list_item_settings_layout);
             holder.done =
@@ -181,6 +184,7 @@ public class PeopleListAdapter extends BaseAdapter {
                         // reset expandedPosition if there is no expanded position
                         expandedPosition = -1;
                     }
+                    notifyDataSetChanged();
                 }
             };
             holder.name.setOnClickListener(listener);
@@ -191,23 +195,21 @@ public class PeopleListAdapter extends BaseAdapter {
     }
 
     public int add(User user) {
-        // TODO: check if need to update view somehow
         users.add(user);
+        notifyDataSetChanged();
         return users.size() - 1;
     }
 
-    public void onDeleteButtonClick(final int postion, LinearLayout settingsLayout) {
-        // TODO: implement method
-        // delete from list view adapter
-        if (postion >= 0 && postion < users.size()) {
+    public void remove(final int position) {
+        if (position >= 0 && position < users.size()) {
             collapseAllItemsSettings();
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    users.remove(postion);
                     activity.get().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            users.remove(position);
                             notifyDataSetChanged();
                         }
                     });
@@ -216,24 +218,151 @@ public class PeopleListAdapter extends BaseAdapter {
             }, LinearLayoutExpandCollapseAnimation.DEFAULT_DURATION);
             expandedPosition = -1;
         }
-
-        // mark deleted from local database
-        // show snackbar with UNDO action
-        // TODO: delete from server
-        // if error, show snackbar with RETRY action
     }
 
-    public void onDoneButtonClick(int position, LinearLayout settingsLayout) {
+    public void onDeleteButtonClick(final int position, LinearLayout settingsLayout) {
         // TODO: implement method
+
+        Snackbar.make(activity.get().findViewById(R.id.people_parent_layout),"Deleting user",Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        if (activity.get() != null) {
+                            FloatingActionButton fab =
+                                    (FloatingActionButton) activity.get()
+                                            .findViewById(R.id.fab_people);
+                            fab.show();
+
+                            if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                // NOT UNDONE
+                                // delete from list view adapter
+                                // TODO: make it delete first, then ask if want it undone
+                                PeopleListAdapter.this.remove(position);
+                                // mark deleted from local database
+                                if (users != null && users.get(position) != null) {
+                                    if (!new UserSqlOperations(activity.get())
+                                            .deleteById(users.get(position).getId())) {
+                                        Toast.makeText(
+                                                activity.get(),
+                                                "Can't delete item from the database",
+                                                Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                }
+                                // TODO: delete from server
+                                // if error, show snackbar with RETRY action
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onShown(Snackbar snackbar) {
+                        super.onShown(snackbar);
+                        if (activity.get() != null) {
+                            FloatingActionButton fab =
+                                    (FloatingActionButton) activity.get()
+                                            .findViewById(R.id.fab_people);
+                            fab.hide();
+                        }
+                    }
+                }).show();
+
+    }
+
+    public void onDoneButtonClick(final int position, LinearLayout settingsLayout) {
         // update in the list view adapter
         // hide settings with animation
-        if (activity.get() != null)
+        if (activity.get() != null) {
             LinearLayoutExpandCollapseAnimation.collapse(settingsLayout);
+            ListView listView = (ListView) activity.get().findViewById(R.id.people_list_view);
 
-        // update in local database, save value before update
-        // show snacbar with UNDO action
-        // TODO: update on server
-        // if error, show snackbar with RETRY action
+            // update in local database, save value before update
+            if (users != null && users.get(position) != null && listView != null
+                    && (position - listView.getFirstVisiblePosition()) >= 0
+                    && (position - listView.getFirstVisiblePosition()) < users.size()) {
+                final boolean isFollowed = users.get(position).isFollowed();
+                final boolean isShareFeeling = users.get(position).isShareFeeling();
+                final boolean isShareBloodSugar = users.get(position).isShareBloodSugar();
+                final boolean isShareInsulin = users.get(position).isShareInsulin();
+                final boolean isShareQuestion = users.get(position).isShareQuestions();
+
+                CheckBox isFollowedCheckBox =
+                        (CheckBox) listView.getChildAt(position - listView.getFirstVisiblePosition())
+                                .findViewById(R.id.people_list_item_follow);
+                CheckBox isShareFeelingCheckBox =
+                        (CheckBox) listView.getChildAt(position - listView.getFirstVisiblePosition())
+                                .findViewById(R.id.people_list_item_share_feeling);
+                CheckBox isShareBloodSugarCheckBox =
+                        (CheckBox) listView.getChildAt(position - listView.getFirstVisiblePosition())
+                                .findViewById(R.id.people_list_item_share_blood_sugar);
+                CheckBox isShareInsulinCheckBox =
+                        (CheckBox) listView.getChildAt(position - listView.getFirstVisiblePosition())
+                                .findViewById(R.id.people_list_item_share_insulin);
+                CheckBox isShareQuestionCheckBox =
+                        (CheckBox) listView.getChildAt(position - listView.getFirstVisiblePosition())
+                                .findViewById(R.id.people_list_item_share_questions);
+
+                final User user = users.get(position);
+                user.setIsFollowed(isFollowedCheckBox.isChecked());
+                user.setShareFeeling(isShareFeelingCheckBox.isChecked());
+                user.setShareBloodSugar(isShareBloodSugarCheckBox.isChecked());
+                user.setShareInsulin(isShareInsulinCheckBox.isChecked());
+                user.setShareQuestions(isShareQuestionCheckBox.isChecked());
+
+                if (new UserSqlOperations(activity.get())
+                        .updateById(user.toContentValues(), user.getId())) {
+                    Snackbar.make(activity.get().findViewById(R.id.people_parent_layout),
+                            "Updated following/sharing options", Snackbar.LENGTH_LONG)
+                            .setAction(R.string.undo, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // prepare user values for update
+                                    user.setIsFollowed(isFollowed);
+                                    user.setShareFeeling(isShareFeeling);
+                                    user.setShareBloodSugar(isShareBloodSugar);
+                                    user.setShareInsulin(isShareInsulin);
+                                    user.setShareQuestions(isShareQuestion);
+
+                                    // update values back
+                                    if(!new UserSqlOperations(activity.get())
+                                            .updateById(user.toContentValues(), user.getId()))
+                                        Toast.makeText(activity.get(),
+                                                "Can't undo the action. Sorry",
+                                                Toast.LENGTH_LONG).show();
+                                }
+                            }).setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                // TODO: update data on server
+                                // if error, show snackbar with RETRY action
+                            }
+                            FloatingActionButton fab = (FloatingActionButton)
+                                    activity.get().findViewById(R.id.fab_people);
+                            fab.show();
+                            PeopleListAdapter.this.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onShown(Snackbar snackbar) {
+                            super.onShown(snackbar);
+                            FloatingActionButton fab = (FloatingActionButton)
+                                    activity.get().findViewById(R.id.fab_people);
+                            fab.hide();
+                        }
+                    }).show();
+                }
+            }
+        }
+
     }
 
 
@@ -252,35 +381,6 @@ public class PeopleListAdapter extends BaseAdapter {
                 }
             }
             Log.v(TAG, "Collapsed all items of listView");
-        }
-    }
-
-    public void collapseOneItemEntirely(final int position) {
-        Log.v(TAG, "collapseOneItemEntirely. Position = " + String.valueOf(position));
-        if (position < getCount() && position >= 0) {
-            final ListView listView = (ListView) activity.get().findViewById(R.id.people_list_view);
-            // TODO: correct. Deletes one and hides another one. What is happening when visibility is set to GONE to getChildAt()
-
-            if(position - listView.getFirstVisiblePosition() >= 0) {
-                LinearLayoutExpandCollapseAnimation.collapseAndExecuteRunnable(listView.getChildAt(
-                        position - listView.getFirstVisiblePosition()
-                ), new Runnable(){
-                    @Override
-                    public void run() {
-                        if (activity.get() != null)
-                            activity.get().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.v(TAG, String.format("Removing item %d of %d", new Integer[]{position, users.size()}));
-
-                                    PeopleListAdapter.this.notifyDataSetChanged();
-                                }
-                            });
-                    }
-                });
-            }
-            users.remove(position);
-            expandedPosition = -1;
         }
     }
 }

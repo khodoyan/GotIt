@@ -2,9 +2,11 @@ package pro.khodoian.gotit.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,10 +24,14 @@ import java.util.GregorianCalendar;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.User;
 import pro.khodoian.gotit.presenter.PeopleListAdapter;
+import pro.khodoian.gotit.sql.SqlOperations;
+import pro.khodoian.gotit.sql.UserContract;
+import pro.khodoian.gotit.sql.UserSqlOperations;
 
 public class PeopleActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String TAG = PeopleActivity.class.getName();
     public static Intent makeIntent(Context context) {
         return new Intent(context, PeopleActivity.class);
     }
@@ -37,14 +43,7 @@ public class PeopleActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -56,12 +55,62 @@ public class PeopleActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // TODO: remove and replace with data from database
-        ArrayList<User> sampleUsersList = User.getSampleUsersList(PeopleActivity.this);
+        // TODO: for debug purposes. Delete when finished
+        final ArrayList<User> sampleUsersList = User.getSampleUsersList(PeopleActivity.this);
 
-        ListView listView = (ListView) findViewById(R.id.people_list_view);
+        ArrayList<User> userList = new ArrayList<>();
+        Cursor cursor = new UserSqlOperations(this).queryAll(null, UserContract.Columns.USERNAME, SqlOperations.SortOrder.ASC);
+        while(cursor.moveToNext()) {
+            Log.v(TAG, "Next cursor position");
+            User user = User.makeUser(cursor);
+            userList.add(user);
+            if (user != null)
+                Log.v(TAG, String.format("User created: %s", user.toString()));
+        }
+
+        final ListView listView = (ListView) findViewById(R.id.people_list_view);
         if (listView != null)
-            listView.setAdapter(new PeopleListAdapter(this, sampleUsersList));
+            listView.setAdapter(new PeopleListAdapter(this, userList));
+
+        // set FAB
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_people);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: remove debug option
+                if (listView != null && listView.getCount() < sampleUsersList.size()) {
+                    final PeopleListAdapter adapter = (PeopleListAdapter) (listView.getAdapter());
+                    final int newId = adapter.add(sampleUsersList.get(listView.getCount()));
+                    if(newId >= 0) {
+                        Snackbar.make(view, "User added", Snackbar.LENGTH_LONG)
+                                .setAction(R.string.undo, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // TODO: implement snackbar action: UNDO
+                                        adapter.remove(newId);
+                                    }
+                                }).setCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
+                                fab.show();
+                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                    new UserSqlOperations(PeopleActivity.this).insert(
+                                            sampleUsersList.get(listView.getCount()).toContentValues()
+                                    );
+                                }
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+                                super.onShown(snackbar);
+                                fab.hide();
+                            }
+                        }).show();
+                    }
+                }
+            }
+        });
     }
 
     @Override
