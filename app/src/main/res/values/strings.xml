@@ -12,13 +12,14 @@
     <string name="cant_update_posts_list" type="id">Can\'t update posts</string>
 
     <!-- Strings related to main activity's navigation drawer -->
+    <string name="title_activity_main">Feed</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="navigation_drawer_feed">Feed</string>
     <string name="navigation_drawer_check_in">Check in</string>
     <string name="navigation_drawer_feedback">Feedback</string>
-    <string name="navigation_drawer_following">Following</string>
-    <string name="navigation_drawer_followers">Followers</string>
+    <string name="navigation_drawer_people">People</string>
     <string name="navigation_drawer_preferences">Preferences</string>
     <string name="navigation_drawer_preferences_heading">Preferences</string>
     <string name="navigation_drawer_people_heading">People</string>
@@ -70,6 +71,15 @@
     <string name="post_feeling_good">I am feeling good!</string>
     <string name="post_feeling_okay">I am feeling okay</string>
     <string name="post_feeling_bad">I am feeling bad</string>
+
+    <!-- Strings related to People -->
+    <string name="people_follow_updates">Follow?</string>
+    <string name="people_follow_updates_checkbox">Follow updates</string>
+    <string name="people_what_to_share">What to share?</string>
+    <string name="people_feeling">Feeling</string>
+    <string name="people_insulin">Insulin</string>
+    <string name="people_blood_sugar">Blood sugar</string>
+    <string name="people_questions">Optional questions</string>
 
     <!-- Strings related to Settings -->
 
@@ -128,6 +138,7 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="title_activity_people">PeopleActivity</string>
 
 
 </resources>

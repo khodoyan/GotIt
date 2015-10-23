@@ -75,10 +75,10 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
         isSharedSwitch = (Switch) findViewById(R.id.checkInIsSharedSwitch);
         final EditText newQuestionEditText = (EditText) findViewById(R.id.checkInNewQuestionEditText);
         final EditText newAnswerEditText = (EditText) findViewById(R.id.checkInNewAnswerEditText);
-
-
         addDefaultQuestionCheckBox = (CheckBox) findViewById(R.id.checkInAddDefaultCheckBox);
         final Button addQuestionButton = (Button) findViewById(R.id.checkInAddQuestionButton);
+
+        // Add action listeners
         addQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,6 +93,8 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
             }
         });
 
+        // Get list of default questions
+        // TODO: consider doing it in the background
         Questionnaire defaultQuestionnaire = new Questionnaire(Questionnaire.FillType.DEFAULT);
         Cursor cursor = new QuestionSqlOperations(this)
                 .queryAll(null, QuestionContract.Columns.ID, SqlOperations.SortOrder.ASC);
@@ -101,6 +103,7 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
                     cursor.getColumnIndex(QuestionContract.Columns.QUESTION))));
         }
 
+        // Create adapter and fill list of questions
         adapter =
                 new QuestionInputListAdapter(
                         this, // activity
@@ -134,7 +137,9 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
                 new AddPostAsyncTask(this, this).execute(newPost);
             } else {
                 if (parentLayout != null)
-                    Snackbar.make(parentLayout, R.string.check_in_no_data, Snackbar.LENGTH_LONG)
+                    Snackbar.make(parentLayout,
+                            R.string.check_in_no_data,
+                            Snackbar.LENGTH_LONG)
                             .show();
             }
         }
@@ -251,7 +256,8 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
                 listLinearLayout.addView(adapter.getView(newQuestionId, null, listLinearLayout));
             }
 
-            // add to questions db
+            // add to questions table in database
+            // TODO: consider doing it in the background
             if (addDefaultQuestionCheckBox != null && addDefaultQuestionCheckBox.isChecked()) {
                 QuestionSqlOperations operations = new QuestionSqlOperations(this);
                 try {

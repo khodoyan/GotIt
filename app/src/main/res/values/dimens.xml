@@ -15,4 +15,7 @@
     <!-- CheckInActivity margins -->
     <dimen name="check_in_question_top_margin">10dp</dimen>
     <dimen name="check_in_question_in_list_top_margin">6dp</dimen>
+
+    <!-- Margins for people list view-->
+    <dimen name="people_userpic_size">48dp</dimen>
 </resources>

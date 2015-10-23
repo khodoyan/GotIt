@@ -112,24 +112,15 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        // pass item to perform action to proxy
+        NavigationMenuProxy menuProxy = new NavigationMenuProxy(this);
+        menuProxy.onNavigationItemSelected(item);
 
-        if (id == R.id.nav_check_in) {
-            // Handle the check in action
-            startActivityForResult(CheckinActivity.makeIntent(this), CheckinActivity.REQUEST_CODE);
-        } else if (id == R.id.nav_feedback) {
-
-        } else if (id == R.id.nav_followers) {
-
-        } else if (id == R.id.nav_following) {
-
-        } else if (id == R.id.nav_preferences) {
-            startActivity(SettingsActivity.makeIntent(this));
-        }
-
+        // hide drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+        // consume event
         return true;
     }
 

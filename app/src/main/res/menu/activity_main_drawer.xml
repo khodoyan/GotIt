@@ -2,26 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_main" android:title="@string/navigation_drawer_feed" />
         <item android:id="@+id/nav_check_in" android:icon="@android:drawable/ic_menu_send"
             android:title="@string/navigation_drawer_check_in" />
         <item android:id="@+id/nav_feedback" android:icon="@android:drawable/ic_menu_report_image"
             android:title="@string/navigation_drawer_feedback" />
+        <item android:id="@+id/nav_people" android:icon="@android:drawable/ic_menu_gallery"
+            android:title="@string/navigation_drawer_people" />
+        <item android:id="@+id/nav_preferences" android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/navigation_drawer_preferences" />
     </group>
 
-    <item android:title="@string/navigation_drawer_people_heading">
-        <menu>
-            <item android:id="@+id/nav_followers" android:icon="@android:drawable/ic_menu_gallery"
-                android:title="@string/navigation_drawer_followers" />
-            <item android:id="@+id/nav_following" android:icon="@android:drawable/ic_menu_gallery"
-                android:title="@string/navigation_drawer_following" />
-        </menu>
-    </item>
 
-    <item android:title="@string/navigation_drawer_preferences_heading">
-        <menu>
-            <item android:id="@+id/nav_preferences" android:icon="@android:drawable/ic_menu_preferences"
-                android:title="@string/navigation_drawer_preferences" />
-        </menu>
-    </item>
 
 </menu>
