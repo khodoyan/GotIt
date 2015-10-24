@@ -56,8 +56,7 @@ public class Questionnaire {
         }
 
         if (type == FillType.DEFAULT_WITH_USER_DEFINED) {
-            // TODO: implement user default values
-
+            // Not working make sure that default is passed to constructor
         }
     }
 

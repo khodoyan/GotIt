@@ -24,7 +24,6 @@ public class QuestionInputListAdapter extends BaseAdapter {
     private boolean hasHeader;
 
     public QuestionInputListAdapter(Activity activity, boolean hasHeader) {
-        // TODO: implement data retain fragment
         questionnaire = new Questionnaire(Questionnaire.FillType.DEFAULT_WITH_USER_DEFINED);
         this.activity = new WeakReference<>(activity);
         this.hasHeader = hasHeader;
@@ -48,7 +47,6 @@ public class QuestionInputListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        // TODO: Разобраться, почему после добавления header'а при обращении к 0 массиву, приложение выкидывает NullPointerException
         if (i >= getCount() || i < 0) {
             return null;
         } else {
