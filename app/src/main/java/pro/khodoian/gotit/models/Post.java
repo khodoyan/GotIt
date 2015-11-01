@@ -49,6 +49,21 @@ public class Post implements ToContentValues {
         return values;
     }
 
+    public PostClient toPostClient() {
+        PostClient result = new PostClient();
+        result.setId(serverId);
+        result.setUsername(username);
+        result.setUpdatedAt(updatedAt);
+        result.setDeletedAt(deletedAt);
+        result.setTimestamp(timestamp);
+        result.setIsShared(isShared);
+        result.setFeeling(feeling);
+        result.setBloodSugar(bloodSugar);
+        result.setAdministeredInsulin(administeredInsulin);
+        result.setQuestionnaire(questionnaire.toJson());
+        return result;
+    }
+
     public Post(ContentValues values) {
 
         serverId = values.getAsLong(PostContract.Columns.SERVER_ID);
