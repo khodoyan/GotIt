@@ -73,15 +73,7 @@ public class SecuredRestAdapter extends RestAdapter.Builder {
         }
 
         /**
-         * Every time a method on the client interface is invoked, this method is
-         * going to get called. The method checks if the client has previously obtained
-         * an OAuth 2.0 bearer token. If not, the method obtains the bearer token by
-         * sending a password grant request to the server.
-         *
-         * Once this method has obtained a bearer token, all future invocations will
-         * automatically insert the bearer token as the "Authorization" header in
-         * outgoing HTTP requests.
-         *
+         * Every time RestAdapter is called, access token is added to header of the request
          */
         @Override
         public void intercept(RequestFacade request) {
@@ -92,13 +84,11 @@ public class SecuredRestAdapter extends RestAdapter.Builder {
 
     }
 
-    private String loginUrl;
     private Client client;
     private String token;
 
     public SecuredRestAdapter setLoginEndpoint(String endpoint){
-        loginUrl = endpoint;
-        return this;
+        return (SecuredRestAdapter) super.setEndpoint(endpoint);
     }
 
     @Override
