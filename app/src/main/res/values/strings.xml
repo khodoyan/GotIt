@@ -36,12 +36,13 @@
     <string name="not_registered">Not registered?</string>
     <string name="action_sign_up">Sign up</string>
     <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_short_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
+    <string name="permission_contacts_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="permission_internet_rationale">Internet access is required for contacting server</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Check in -->
@@ -80,6 +81,26 @@
     <string name="people_insulin">Insulin</string>
     <string name="people_blood_sugar">Blood sugar</string>
     <string name="people_questions">Optional questions</string>
+
+    <!-- Strings related to SignUpActivity -->
+    <string name="title_activity_signup">Sign up</string>
+    <string name="signup_enter_you_details">Enter your details below</string>
+    <string name="signup_username">Email address</string>
+    <string name="signup_password">Password</string>
+    <string name="signup_first_name">First name (optional)</string>
+    <string name="signup_last_name">Last name (optional)</string>
+    <string name="signup_birthday">Birthday (optional)</string>
+    <string name="signup_choose_date">Choose date</string>
+    <string name="signup_medical_record_number">Medical record number (optional)</string>
+    <string name="signup_i_am_a_patient">I am a patient</string>
+    <string name="signup_sign_up">Sign up</string>
+
+    <string name="signup_toast_username_not_blank">Username should not be blank</string>
+    <string name="signup_toast_password_too_short">Password is too short. Please enter 6 characters at least</string>
+    <string name="signup_toast_username_busy">This username is busy, please try another one</string>
+    <string name="signup_toast_incorrect_input">Input is incorrect, please correct and try again</string>
+    <string name="signup_toast_cant_signup">Error signing up, please check inputs and try again later</string>
+    <string name="signup_toast_no_access">Can\'t access remote server, please check internet connection</string>
 
     <!-- Strings related to Settings -->
 
@@ -139,6 +160,12 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_people">People</string>
+
+    <string name="title_activity_splash">Got it!</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="app_title">Got it!</string>
+    <string name="app_title_line2">Diabetes management</string>
+    <string name="splash_logging_in">Logging you in...</string>
 
 
 </resources>

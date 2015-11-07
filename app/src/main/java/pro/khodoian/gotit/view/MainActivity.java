@@ -1,5 +1,6 @@
 package pro.khodoian.gotit.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,8 +24,13 @@ import java.util.ArrayList;
 import pro.khodoian.gotit.AsyncTasks.DeletePostByIdAsyncTask;
 import pro.khodoian.gotit.AsyncTasks.GetPostsAsyncTask;
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.client.SecuredRestAdapter;
+import pro.khodoian.gotit.client.UserService;
 import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.presenter.PostListAdapter;
+import pro.khodoian.gotit.retrofit.AccessPoint;
+import retrofit.RestAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -34,6 +40,10 @@ public class MainActivity extends AppCompatActivity
     RelativeLayout contentLayout;
     PostListAdapter postsAdapter;
     ListView postsListView;
+
+    public static Intent makeIntent(Context context) {
+        return new Intent(context, MainActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

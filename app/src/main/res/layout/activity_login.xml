@@ -8,29 +8,6 @@
     tools:context="pro.khodoian.gotit.view.LoginActivity">
 
     <!-- Login progress -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/log_in_with"
-        android:padding="10dp"
-        />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/sign_in_with_google"
-        android:id="@+id/sign_in_with_google"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="or"
-        android:padding="25dp"
-        />
-
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_marginBottom="8dp" android:visibility="gone" />
@@ -78,8 +55,10 @@
             <Button android:id="@+id/sign_up_button" style="?android:textAppearanceSmall"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:layout_marginTop="8dp" android:text="@string/action_sign_up"
-                android:textStyle="bold" />
+                android:layout_marginTop="8dp"
+                android:text="@string/action_sign_up"
+                android:textStyle="bold"
+                android:onClick="startSignupActivityForResult"/>
 
         </LinearLayout>
     </ScrollView>

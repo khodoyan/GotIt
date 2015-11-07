@@ -59,7 +59,9 @@ public class SqlOperationsUsersTable extends ActivityInstrumentationTestCase2<Ma
                     "USER" + i + " lastname",
                     new GregorianCalendar().getTimeInMillis(),
                     "USER" + i + " medical record number",
-                    null
+                    null,
+                    true,
+                    true
             ));
         }
     }
@@ -90,7 +92,7 @@ public class SqlOperationsUsersTable extends ActivityInstrumentationTestCase2<Ma
 
         // Check that correct number of records and correct values are actually added
         Cursor cursor = usersSql.query(new String[] {UserContract.Columns.USERNAME},
-                null, null, null, null);
+                null, null, null, null, null);
         assertEquals(2, cursor.getCount());
         boolean user1Correct = false;
         boolean user2Correct = false;
@@ -162,6 +164,7 @@ public class SqlOperationsUsersTable extends ActivityInstrumentationTestCase2<Ma
                 new String[] {UserContract.Columns.USERNAME},
                 UserContract.Columns.USERNAME + " = ?",
                 new String[]{"USER3"},
+                null,
                 null,
                 null
         );
