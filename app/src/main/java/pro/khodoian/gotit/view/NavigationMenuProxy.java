@@ -3,19 +3,25 @@ package pro.khodoian.gotit.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.client.AuthenticationDetailsManager;
 
 /**
- * Created by eduardkhodoyan on 10/19/15.
+ * Class for managing navigation menu
+ *
+ * @author eduardkhodoyan
  */
 public class NavigationMenuProxy {
     WeakReference<Activity> activity;
 
     public NavigationMenuProxy(Activity activity) {
-        this.activity = new WeakReference<>(activity);
+        if (activity != null){
+            this.activity = new WeakReference<>(activity);
+        }
     }
 
     public void onNavigationItemSelected(MenuItem item) {

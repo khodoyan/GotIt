@@ -15,9 +15,11 @@
 
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing" android:text="Name Here"
+        android:id="@+id/nav_name_text_view"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="name.here@gmail.com" android:id="@+id/textView" />
+        android:text="name.here@gmail.com"
+        android:id="@+id/nav_username_text_view" />
 
 </LinearLayout>

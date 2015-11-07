@@ -58,6 +58,14 @@ public class AuthenticationDetailsManager {
         }
     }
 
+    public void clearToken() {
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove(KEY_PASSWORD);
+            editor.commit();
+        }
+    }
+
     public void setCredentials(String username, String password) {
         this.username = username;
         this.password = password;
@@ -112,5 +120,10 @@ public class AuthenticationDetailsManager {
     public boolean hasDetails() {
         return (username != null && !username.equals("")
                 && password != null && !password.equals(""));
+    }
+
+    public void logout() {
+        this.clearPassword();
+        this.clearToken();
     }
 }

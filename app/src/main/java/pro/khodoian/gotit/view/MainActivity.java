@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity
         postsListView = (ListView) findViewById(R.id.postListView);
         postsAdapter = new PostListAdapter(this, new ArrayList<Post>());
         postsListView.setAdapter(postsAdapter);
+
+        // TODO: set full name and username to nav bar
     }
 
     @Override
