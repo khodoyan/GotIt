@@ -1,8 +1,9 @@
 package pro.khodoian.gotit.client;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import pro.khodoian.gotit.models.UserClient;
 
 /**
  * Class for managing and keeping authentication data: username, password and token
@@ -19,25 +20,37 @@ public class AuthenticationDetailsManager {
     public static final String KEY_USERNAME = "USERNAME";
     public static final String KEY_PASSWORD = "PASSWORD";
     public static final String KEY_TOKEN = "TOKEN";
+    public static final String KEY_FIRSTNAME = "FIRSTNAME";
+    public static final String KEY_LASTNAME = "LASTNAME";
+    public static final String KEY_IS_PATIENT = "IS_PATIENT";
 
     private String username;
     private String password;
     private String token;
+
+    private String firstname;
+    private String lastname;
+    private boolean isPatient;
+
 
     SharedPreferences preferences;
 
     public AuthenticationDetailsManager(Context context) {
         if (context != null) {
             preferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-            updateCredentialsFromPreferences();
+            updateDetailsFromPreferences();
         }
     }
 
-    private void updateCredentialsFromPreferences() {
+    private void updateDetailsFromPreferences() {
         if (preferences != null) {
             username = preferences.getString(KEY_USERNAME, null);
             password = preferences.getString(KEY_PASSWORD, null);
             token = preferences.getString(KEY_TOKEN, null);
+            firstname = preferences.getString(KEY_FIRSTNAME, null);
+            lastname = preferences.getString(KEY_LASTNAME, null);
+            isPatient = preferences.getBoolean(KEY_IS_PATIENT, false);
+
         }
     }
 
@@ -54,6 +67,16 @@ public class AuthenticationDetailsManager {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.remove(KEY_PASSWORD);
+            editor.commit();
+        }
+    }
+
+    public void clearDetails() {
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove(KEY_FIRSTNAME);
+            editor.remove(KEY_LASTNAME);
+            editor.remove(KEY_IS_PATIENT);
             editor.commit();
         }
     }
@@ -75,7 +98,16 @@ public class AuthenticationDetailsManager {
             editor.putString(KEY_PASSWORD, password);
             editor.commit();
         }
+    }
 
+    public void setUserDetails(UserClient user) {
+        if (user != null && preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(KEY_FIRSTNAME, firstname);
+            editor.putString(KEY_LASTNAME, lastname);
+            editor.putBoolean(KEY_IS_PATIENT, isPatient);
+            editor.commit();
+        }
     }
 
     public String getUsername() {

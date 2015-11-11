@@ -20,6 +20,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pro.khodoian.gotit.client.AuthenticationDetailsManager;
 import pro.khodoian.gotit.sqlasynctasks.AddPostAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
@@ -157,8 +158,7 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
         result.setFeeling(getFeeling());
         result.setIsShared(isShared());
         result.setQuestionnaire(this.getQuestionnaire());
-        // TODO: make user not default
-        result.setUsername("user1");
+        result.setUsername(new AuthenticationDetailsManager(CheckinActivity.this).getUsername());
         if (result.isBlank())
             return null;
         return result;
@@ -216,9 +216,8 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
     }
 
     private boolean isShared() {
-        if (isSharedSwitch != null)
-            return isSharedSwitch.isChecked();
-        return false;
+        return isSharedSwitch != null
+                && isSharedSwitch.isChecked();
     }
 
     @Override

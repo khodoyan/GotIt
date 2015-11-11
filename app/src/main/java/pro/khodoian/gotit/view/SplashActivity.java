@@ -10,12 +10,15 @@ import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.client.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.UserService;
 import pro.khodoian.gotit.client.UsersProxy;
+import pro.khodoian.gotit.models.UserClient;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class SplashActivity extends AppCompatActivity {
+
+    // TODO: get current user details and update them in AuthenticationDetailsManager
 
     public static final String TAG = SplashActivity.class.getCanonicalName();
 
@@ -38,22 +41,25 @@ public class SplashActivity extends AppCompatActivity {
         if (authManager.getToken() == null || authManager.getToken().equals("")) {
             startLoginActivity();
         } else {
-            new UserService(authManager).checkLogin(new UserService.CheckLoginListener() {
-                @Override
-                public void onCheckLoginSuccess() {
-                    startMainActivityAndFinish();
-                }
+            new UserService(authManager).getUser(authManager.getUsername(),
+                    new UserService.GetUserListener() {
+                        @Override
+                        public void onSuccess(UserClient user) {
+                            authManager.setUserDetails(user);
+                            startMainActivityAndFinish();
+                        }
 
-                @Override
-                public void onCheckLoginUnauthorized() {
-                    startLoginActivity();
-                }
+                        @Override
+                        public void onUnauthorized() {
+                            startLoginActivity();
+                        }
 
-                @Override
-                public void onCheckLoginFailure() {
-                    startLoginActivity();
-                }
-            });
+                        @Override
+                        public void onFailure() {
+                            startLoginActivity();
+                        }
+                    }
+            );
         }
         super.onResume();
     }

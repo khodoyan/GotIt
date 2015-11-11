@@ -2,10 +2,12 @@ package pro.khodoian.gotit.client;
 
 import pro.khodoian.gotit.models.SignupUser;
 import pro.khodoian.gotit.models.TestModel;
+import pro.khodoian.gotit.models.UserClient;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Path;
 
 /**
  * Retrofit interface to get access to Users controller of server-side
@@ -22,4 +24,7 @@ public interface UsersProxy {
 
     @GET(CHECK_AUTH)
     public void checkAuth(Callback<Void> callback);
+
+    @GET(SERVICE_PATH + "/{username}")
+    public void getUser(@Path("username") String username, Callback<UserClient> callback);
 }

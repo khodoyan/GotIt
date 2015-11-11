@@ -3,7 +3,9 @@ package pro.khodoian.gotit.client;
 import android.util.Log;
 
 import pro.khodoian.gotit.models.SignupUser;
+import pro.khodoian.gotit.models.UserClient;
 import pro.khodoian.gotit.retrofit.AccessPoint;
+import pro.khodoian.gotit.sql.UserContract;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -33,6 +35,12 @@ public class UserService {
         void onCheckLoginSuccess();
         void onCheckLoginUnauthorized();
         void onCheckLoginFailure();
+    }
+
+    public interface GetUserListener {
+        void onSuccess(UserClient user);
+        void onUnauthorized();
+        void onFailure();
     }
 
     public UserService(AuthenticationDetailsManager authManager) {
@@ -106,6 +114,33 @@ public class UserService {
             Log.e(TAG, "Couldn't create authorised service for some reason");
             callback.onCheckLoginFailure();
         }
+    }
 
+    public void getUser(String username, final GetUserListener callbacks) {
+        if (authorisedUsersService != null) {
+            authorisedUsersService.getUser(username, new Callback<UserClient>() {
+                @Override
+                public void success(UserClient user, Response response) {
+                    Log.e(TAG, "Callback.success started");
+                    if (response != null && response.getStatus() == HttpStatus.SC_OK)
+                        callbacks.onSuccess(user);
+                    else if (response != null
+                            && (response.getStatus() == HttpStatus.SC_UNAUTHORIZED
+                            || response.getStatus() == HttpStatus.SC_BAD_REQUEST))
+                        callbacks.onUnauthorized();
+                    else
+                        callbacks.onFailure();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, "Callback.failure started");
+                    callbacks.onFailure();
+                }
+            });
+        } else {
+            Log.e(TAG, "Couldn't create authorised service for some reason");
+            callbacks.onFailure();
+        }
     }
 }
