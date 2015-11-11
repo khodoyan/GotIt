@@ -24,8 +24,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pro.khodoian.gotit.SQLAsyncTasks.DeletePostByIdAsyncTask;
-import pro.khodoian.gotit.SQLAsyncTasks.GetPostsAsyncTask;
+import pro.khodoian.gotit.sqlasynctasks.DeletePostByIdAsyncTask;
+import pro.khodoian.gotit.sqlasynctasks.GetPostsAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.presenter.PostListAdapter;

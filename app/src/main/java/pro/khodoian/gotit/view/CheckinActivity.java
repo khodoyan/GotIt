@@ -20,7 +20,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import pro.khodoian.gotit.SQLAsyncTasks.AddPostAsyncTask;
+import pro.khodoian.gotit.sqlasynctasks.AddPostAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.models.Question;
