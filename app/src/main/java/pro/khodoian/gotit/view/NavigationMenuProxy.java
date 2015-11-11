@@ -44,6 +44,10 @@ public class NavigationMenuProxy {
         }
     }
 
+    public void addPosts() {
+
+    }
+
     public void startCheckinActivity() {
         Intent intent;
         if (activity.get() != null && !(activity.get() instanceof CheckinActivity)) {

@@ -26,9 +26,9 @@ public class AuthenticationDetailsManager {
 
     SharedPreferences preferences;
 
-    public AuthenticationDetailsManager(Activity activity) {
-        if (activity != null) {
-            preferences = activity.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+    public AuthenticationDetailsManager(Context context) {
+        if (context != null) {
+            preferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
             updateCredentialsFromPreferences();
         }
     }

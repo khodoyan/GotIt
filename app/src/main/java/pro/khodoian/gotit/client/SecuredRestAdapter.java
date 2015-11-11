@@ -7,14 +7,6 @@ package pro.khodoian.gotit.client;
  **
  */
 
-import com.google.common.io.BaseEncoding;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import org.apache.commons.io.IOUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 import retrofit.Endpoint;
@@ -24,14 +16,10 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RestAdapter.Log;
 import retrofit.RestAdapter.LogLevel;
+import retrofit.client.ApacheClient;
 import retrofit.client.Client;
 import retrofit.client.Client.Provider;
-import retrofit.client.Header;
-import retrofit.client.OkClient;
-import retrofit.client.Request;
-import retrofit.client.Response;
 import retrofit.converter.Converter;
-import retrofit.mime.FormUrlEncodedTypedOutput;
 
 /**
  * A Builder class for a Retrofit REST Adapter. Extends the default implementation by providing logic to
@@ -55,15 +43,13 @@ import retrofit.mime.FormUrlEncodedTypedOutput;
  */
 public class SecuredRestAdapter extends RestAdapter.Builder {
 
+    // TODO: implement token refresh
+
+    public static final String TAG = SecuredRestAdapter.class.getCanonicalName();
+
     private class OAuthHandler implements RequestInterceptor {
 
-        private boolean loggedIn;
         private Client client;
-        private String tokenIssuingEndpoint;
-        private String username;
-        private String password;
-        private String clientId;
-        private String clientSecret;
         private String accessToken;
 
         public OAuthHandler(Client client, String accessToken) {
@@ -160,6 +146,9 @@ public class SecuredRestAdapter extends RestAdapter.Builder {
     }
 
     public SecuredRestAdapter setToken(String token) {
+        if (token == null)
+            throw new SecuredRestAdapterException(
+                    "Token must be provided, when calling SecuredRestAdapter");
         this.token = token;
         return this;
     }
@@ -171,10 +160,12 @@ public class SecuredRestAdapter extends RestAdapter.Builder {
                     "Token must be provided, when calling SecuredRestAdapter");
 
         if (client == null) {
-            client = new OkClient();
+            client = new ApacheClient();
         }
-        OAuthHandler hdlr = new OAuthHandler(client, token);
-        setRequestInterceptor(hdlr);
+        OAuthHandler handler = new OAuthHandler(client, token);
+        setRequestInterceptor(handler);
+
+        android.util.Log.v(TAG, "Token is: " + token);
 
         return super.build();
     }

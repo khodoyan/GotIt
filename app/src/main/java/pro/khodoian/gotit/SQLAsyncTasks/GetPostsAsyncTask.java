@@ -1,4 +1,4 @@
-package pro.khodoian.gotit.AsyncTasks;
+package pro.khodoian.gotit.SQLAsyncTasks;
 
 import android.content.Context;
 import android.database.Cursor;

@@ -29,7 +29,7 @@ public class Post implements ToContentValues {
     private Feeling feeling;
     private float bloodSugar;
     private boolean administeredInsulin;
-    private Questionnaire questionnaire;
+    private transient Questionnaire questionnaire;
 
     public ContentValues toContentValues() {
         ContentValues values = new ContentValues();
@@ -197,7 +197,7 @@ public class Post implements ToContentValues {
             return result;
     }
 
-    private User user;
+    private transient User user;
 
     public long getId() {
         return id;

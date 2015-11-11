@@ -1,8 +1,11 @@
 package pro.khodoian.gotit.view;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -17,30 +20,44 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pro.khodoian.gotit.AsyncTasks.DeletePostByIdAsyncTask;
-import pro.khodoian.gotit.AsyncTasks.GetPostsAsyncTask;
+import pro.khodoian.gotit.SQLAsyncTasks.DeletePostByIdAsyncTask;
+import pro.khodoian.gotit.SQLAsyncTasks.GetPostsAsyncTask;
 import pro.khodoian.gotit.R;
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
-import pro.khodoian.gotit.client.SecuredRestAdapter;
-import pro.khodoian.gotit.client.UserService;
 import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.presenter.PostListAdapter;
-import pro.khodoian.gotit.retrofit.AccessPoint;
-import retrofit.RestAdapter;
+import pro.khodoian.gotit.services.PostService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         DeletePostByIdAsyncTask.Callback, GetPostsAsyncTask.Callback {
 
+    public static final String TAG = MainActivity.class.getCanonicalName();
+
     FloatingActionButton fab;
     RelativeLayout contentLayout;
     PostListAdapter postsAdapter;
     ListView postsListView;
+
+    PostService postService;
+    private ServiceConnection postServiceConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // Because we have bound to an explicit
+            // service that is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            PostService.LocalBinder binder = (PostService.LocalBinder) service;
+            postService = binder.getService();
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        public void onServiceDisconnected(ComponentName className) {
+            postService = null;
+        }
+    };
 
     public static Intent makeIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -81,6 +98,9 @@ public class MainActivity extends AppCompatActivity
         postsAdapter = new PostListAdapter(this, new ArrayList<Post>());
         postsListView.setAdapter(postsAdapter);
 
+        // connect to PostService
+        bindService(PostService.makeIntent(this), postServiceConnection, BIND_AUTO_CREATE);
+
         // TODO: set full name and username to nav bar
     }
 
@@ -91,6 +111,13 @@ public class MainActivity extends AppCompatActivity
             fab.show();
         Long limit = null;
         new GetPostsAsyncTask(this, this).execute(limit);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (postServiceConnection != null)
+            unbindService(postServiceConnection);
+        super.onDestroy();
     }
 
     @Override
@@ -150,9 +177,9 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == CheckinActivity.REQUEST_CODE) {
 
             if (resultCode == CheckinActivity.SUCCESSFUL) {
-                // successfully added post
+                // successfully added post to local SQLite
                 if (fab != null)
-                    fab.hide();
+                    //fab.hide();
                 if (contentLayout != null)
                     if (data != null && data.getLongExtra(CheckinActivity.KEY_POST_ID, -1) != -1) {
                         Snackbar.make(contentLayout, R.string.post_added, Snackbar.LENGTH_LONG).setAction(R.string.undo, new View.OnClickListener() {
@@ -175,9 +202,29 @@ public class MainActivity extends AppCompatActivity
                                 super.onDismissed(snackbar, event);
                                 if (!fab.isShown())
                                     fab.show();
-                                if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                    // UNDO was pressed
-                                    // TODO: send post to server
+                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                    // UNDO not pressed, so post to server
+                                    // send post to server
+                                    // call login activity if
+                                    if (postService != null)
+                                        postService.addPost(
+                                                data.getLongExtra(CheckinActivity.KEY_POST_ID, -1),
+                                                new PostService.AddPostListener() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        Toast.makeText(MainActivity.this, "Post added: " + data.getLongExtra(CheckinActivity.KEY_POST_ID, -1), Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                                    @Override
+                                                    public void onUnauthorized() {
+                                                        startActivity(LoginActivity.makeIntent(MainActivity.this));
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure() {
+                                                        Toast.makeText(MainActivity.this, "Error sending post. Sorry", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
                                 }
                             }
                         }).show();
@@ -242,4 +289,6 @@ public class MainActivity extends AppCompatActivity
             }
         }).show();
     }
+
+
 }

@@ -55,7 +55,7 @@ public class UserService {
         return new SecuredRestAdapter()
                 .setLoginEndpoint(AccessPoint.ENDPOINT + AccessPoint.TOKEN_PATH)
                 .setToken(token)
-                .setClient(new OkClient())
+                .setClient(new ApacheClient())
                 .setEndpoint(AccessPoint.ENDPOINT)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build()

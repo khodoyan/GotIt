@@ -9,6 +9,7 @@ import android.util.Log;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.client.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.UserService;
+import pro.khodoian.gotit.client.UsersProxy;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -37,7 +38,22 @@ public class SplashActivity extends AppCompatActivity {
         if (authManager.getToken() == null || authManager.getToken().equals("")) {
             startLoginActivity();
         } else {
-            startMainActivityAndFinish();
+            new UserService(authManager).checkLogin(new UserService.CheckLoginListener() {
+                @Override
+                public void onCheckLoginSuccess() {
+                    startMainActivityAndFinish();
+                }
+
+                @Override
+                public void onCheckLoginUnauthorized() {
+                    startLoginActivity();
+                }
+
+                @Override
+                public void onCheckLoginFailure() {
+                    startLoginActivity();
+                }
+            });
         }
         super.onResume();
     }
