@@ -212,6 +212,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (!fab.isShown())
+            fab.show();
         long postId = -1;
 
         // Check in
