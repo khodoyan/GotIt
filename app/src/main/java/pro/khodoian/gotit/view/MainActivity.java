@@ -20,11 +20,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pro.khodoian.gotit.sqlasynctasks.DeletePostByIdAsyncTask;
+import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.sqlasynctasks.DeleteUnsentPostByIdAsyncTask;
 import pro.khodoian.gotit.sqlasynctasks.GetPostsAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
@@ -33,7 +35,7 @@ import pro.khodoian.gotit.services.PostService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        DeletePostByIdAsyncTask.Callback, GetPostsAsyncTask.Callback {
+        DeleteUnsentPostByIdAsyncTask.Callback, GetPostsAsyncTask.Callback {
 
     public static final String TAG = MainActivity.class.getCanonicalName();
 
@@ -41,8 +43,13 @@ public class MainActivity extends AppCompatActivity
     RelativeLayout contentLayout;
     PostListAdapter postsAdapter;
     ListView postsListView;
+    TextView usernameTextView;
+    TextView nameTextView;
 
     PostService postService;
+    boolean postServiceConnected = false;
+    boolean addingPost = false;
+
     private ServiceConnection postServiceConnection = new ServiceConnection() {
         // Called when the connection with the service is established
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -51,6 +58,8 @@ public class MainActivity extends AppCompatActivity
             // cast its IBinder to a concrete class and directly access it.
             PostService.LocalBinder binder = (PostService.LocalBinder) service;
             postService = binder.getService();
+            updateFeed();
+            postServiceConnected = true;
         }
 
         // Called when the connection with the service disconnects unexpectedly
@@ -94,14 +103,19 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        // TODO: understand, why usernameTextView and nameTextView are null after assignment
+        usernameTextView = (TextView)
+                findViewById(R.id.nav_view).findViewById(R.id.nav_username_text_view);
+        nameTextView = (TextView)
+                findViewById(R.id.nav_view).findViewById(R.id.nav_name_text_view);
+
         postsListView = (ListView) findViewById(R.id.postListView);
         postsAdapter = new PostListAdapter(this, new ArrayList<Post>());
         postsListView.setAdapter(postsAdapter);
 
         // connect to PostService
         bindService(PostService.makeIntent(this), postServiceConnection, BIND_AUTO_CREATE);
-
-        // TODO: set full name and username to nav bar
     }
 
     @Override
@@ -111,12 +125,40 @@ public class MainActivity extends AppCompatActivity
             fab.show();
         Long limit = null;
         new GetPostsAsyncTask(this, this).execute(limit);
+
+        // set full name and username to nav bar
+        AuthenticationDetailsManager authManager = new AuthenticationDetailsManager(this);
+
+        if (usernameTextView != null && authManager != null && authManager.getUsername() != null) {
+            usernameTextView.setText(authManager.getUsername());
+        }
+        if (nameTextView != null && authManager != null ) {
+            String firstname = authManager.getFirstname();
+            String lastname = authManager.getLastname();
+            String fullName = "";
+            if (firstname != null)
+                fullName += firstname;
+            if (lastname != null) {
+                if (!fullName.equals(""))
+                    fullName += " ";
+                fullName += lastname;
+            }
+            nameTextView.setText(fullName);
+        }
+
+        if (!authManager.isPatient())
+            fab.hide();
+
+        if (postServiceConnected && postService != null)
+            updateFeed();
     }
 
     @Override
     protected void onDestroy() {
-        if (postServiceConnection != null)
+        if (postServiceConnection != null) {
             unbindService(postServiceConnection);
+            postServiceConnected = false;
+        }
         super.onDestroy();
     }
 
@@ -172,71 +214,54 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         long postId = -1;
 
-
         // Check in
         if (requestCode == CheckinActivity.REQUEST_CODE) {
 
             if (resultCode == CheckinActivity.SUCCESSFUL) {
+                addingPost = true;
                 // successfully added post to local SQLite
-                if (fab != null)
-                    //fab.hide();
-                if (contentLayout != null)
-                    if (data != null && data.getLongExtra(CheckinActivity.KEY_POST_ID, -1) != -1) {
-                        Snackbar.make(contentLayout, R.string.post_added, Snackbar.LENGTH_LONG).setAction(R.string.undo, new View.OnClickListener() {
+                if (data != null && data.getLongExtra(CheckinActivity.KEY_POST_ID, -1) != -1) {
+                    final long id = data.getLongExtra(CheckinActivity.KEY_POST_ID, -1);
+                    if (postService != null) {
+                        postService.addPost(id, new PostService.AddPostListener() {
                             @Override
-                            public void onClick(View view) {
-                                // undo
-                                new DeletePostByIdAsyncTask(MainActivity.this, MainActivity.this)
-                                        .execute(data.getLongExtra(CheckinActivity.KEY_POST_ID, -1));
-                            }
-                        }).setCallback(new Snackbar.Callback() {
-                            @Override
-                            public void onShown(Snackbar snackbar) {
-                                super.onShown(snackbar);
-                                if (fab.isShown())
-                                    fab.hide();
+                            public void onSuccess(final Post post) {
+                                Snackbar.make(contentLayout, R.string.post_added, Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.undo, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                // undo
+                                                new DeleteUnsentPostByIdAsyncTask(MainActivity.this, MainActivity.this)
+                                                        .execute(data.getLongExtra(CheckinActivity.KEY_POST_ID, -1));
+                                                postService.deletePost(post.getServerId());
+                                                addingPost = false;
+                                                updateFeed();
+                                            }
+                                        }).setCallback(new Snackbar.Callback() {
+                                    @Override
+                                    public void onDismissed(Snackbar snackbar, int event) {
+                                        if (event != DISMISS_EVENT_ACTION) {
+                                            addingPost = false;
+                                            updateFeed();
+                                        }
+                                        super.onDismissed(snackbar, event);
+                                    }
+                                }).show();
                             }
 
                             @Override
-                            public void onDismissed(Snackbar snackbar, int event) {
-                                super.onDismissed(snackbar, event);
-                                if (!fab.isShown())
-                                    fab.show();
-                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                    // UNDO not pressed, so post to server
-                                    // send post to server
-                                    // call login activity if
-                                    if (postService != null)
-                                        postService.addPost(
-                                                data.getLongExtra(CheckinActivity.KEY_POST_ID, -1),
-                                                new PostService.AddPostListener() {
-                                                    @Override
-                                                    public void onSuccess() {
-                                                        Toast.makeText(MainActivity.this, "Post added: " + data.getLongExtra(CheckinActivity.KEY_POST_ID, -1), Toast.LENGTH_SHORT).show();
-                                                    }
-
-                                                    @Override
-                                                    public void onUnauthorized() {
-                                                        startActivity(LoginActivity.makeIntent(MainActivity.this));
-                                                    }
-
-                                                    @Override
-                                                    public void onFailure() {
-                                                        Toast.makeText(MainActivity.this, "Error sending post. Sorry", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                }
+                            public void onUnauthorized() {
+                                addingPost = false;
                             }
-                        }).show();
-                    } else {
-                        if (data == null)
-                            Log.e("Snackbar not shown", "data == null");
-                        else if (data.getLongExtra(CheckinActivity.KEY_POST_ID, -1) != -1)
-                            Log.e("Snackbar not shown", "data.getLongExtra(CheckinActivity.KEY_POST_ID, -1) != -1");
+
+                            @Override
+                            public void onFailure() {
+                                addingPost = false;
+                            }
+                        });
                     }
-            } else {
-                // unable to add post
-                // Toast.makeText(this, R.string.cant_add_post, Toast.LENGTH_LONG).show();
+
+                }
             }
         }
     }
@@ -290,5 +315,46 @@ public class MainActivity extends AppCompatActivity
         }).show();
     }
 
+    private void updateFeed() {
+        // update feed
+        if (postService != null && !addingPost) {
+            try {
+                postService.updatePosts(new PostService.UpdateFeedListener() {
+                    @Override
+                    public void onSuccess() {
+                        Long limitAsyncTask = null;
+                        new GetPostsAsyncTask(
+                                MainActivity.this,
+                                new GetPostsAsyncTask.Callback() {
+                                    @Override
+                                    public void onGotPostsSuccess(ArrayList<Post> posts) {
+                                        postsAdapter.setData(posts);
+                                    }
 
+                                    @Override
+                                    public void onGotPostFailed() {
+                                        Toast.makeText(MainActivity.this,
+                                                "Can't update feed. Please try again",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                        ).execute(limitAsyncTask);
+                    }
+
+                    @Override
+                    public void onUnauthorized() {
+                        startActivity(LoginActivity.makeIntent(MainActivity.this));
+                    }
+
+                    @Override
+                    public void onFailure() {
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, e.toString());
+            }
+
+        }
+    }
 }

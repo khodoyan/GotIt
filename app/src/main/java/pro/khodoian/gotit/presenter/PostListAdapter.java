@@ -2,6 +2,7 @@ package pro.khodoian.gotit.presenter;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -40,10 +41,18 @@ public class PostListAdapter extends BaseAdapter {
 
     ArrayList<Post> posts;
     WeakReference<Activity> activity;
+    LayoutInflater inflater;
 
     public PostListAdapter(Activity activity, ArrayList<Post> posts) {
         this.activity = new WeakReference<>(activity);
         this.posts = posts;
+        if (activity != null)
+            inflater = activity.getLayoutInflater();
+    }
+
+    public void setData(ArrayList<Post> posts) {
+        this.posts = posts;
+        notifyDataSetChanged();
     }
 
 
@@ -75,20 +84,21 @@ public class PostListAdapter extends BaseAdapter {
             return null;
 
         Post post = posts.get(position);
-        View resultView = view;
+        //View view = view;
+
         ViewHolder holder;
 
         if (view != null)
-            holder = (ViewHolder) resultView.getTag();
+            holder = (ViewHolder) view.getTag();
         else {
-            if (activity.get() != null)
-                resultView = activity.get().getLayoutInflater()
-                        .inflate(R.layout.post, null);
+            if (inflater != null)
+                view = inflater.inflate(R.layout.post, null);
+        }
             holder = new ViewHolder();
 
             // set userpic
             holder.userpic =
-                    (ImageView) resultView.findViewById(R.id.postUserpicImageView);
+                    (ImageView) view.findViewById(R.id.postUserpicImageView);
             Drawable userpic = null;
             if (post.getUser() != null){
                 userpic = post.getUser().getUserpic();
@@ -100,15 +110,15 @@ public class PostListAdapter extends BaseAdapter {
 
             // set timestamp
             holder.timestamp =
-                    (TextView) resultView.findViewById(R.id.postTimestampTextView);
+                    (TextView) view.findViewById(R.id.postTimestampTextView);
             if (post.getTimestamp() != 0)
                 holder.timestamp.setText(
-                        new SimpleDateFormat("DD MMMM YYYY HH:mm", Locale.getDefault())
+                        new SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault())
                                 .format(new Date(post.getTimestamp())));
 
             // set name
             holder.name =
-                    (TextView) resultView.findViewById(R.id.postNameTextView);
+                    (TextView) view.findViewById(R.id.postNameTextView);
             String name = "";
             if (post.getUser() != null && post.getUser().getFirstName() != null)
                 name += post.getUser().getFirstName();
@@ -120,7 +130,7 @@ public class PostListAdapter extends BaseAdapter {
 
             // set feeling
             holder.feeling =
-                    (TextView) resultView.findViewById(R.id.postFeelingTextView);
+                    (TextView) view.findViewById(R.id.postFeelingTextView);
             Post.Feeling feeling = post.getFeeling();
             if (feeling != null) {
                 switch (feeling) {
@@ -140,9 +150,9 @@ public class PostListAdapter extends BaseAdapter {
 
             // blood sugar
             holder.sugar =
-                    (TextView) resultView.findViewById(R.id.postSugarTextView);
+                    (TextView) view.findViewById(R.id.postSugarTextView);
             holder.sugarValue =
-                    (TextView) resultView.findViewById(R.id.postSugarValueTextView);
+                    (TextView) view.findViewById(R.id.postSugarValueTextView);
             if (post.getBloodSugar() == 0f) {
                 holder.sugar.setVisibility(View.INVISIBLE);
                 holder.sugar.setHeight(0);
@@ -154,7 +164,7 @@ public class PostListAdapter extends BaseAdapter {
 
             // set insulin
             holder.insulin =
-                    (TextView) resultView.findViewById(R.id.postInsulinTextView);
+                    (TextView) view.findViewById(R.id.postInsulinTextView);
             if (!post.isAdministeredInsulin()) {
                 holder.insulin.setVisibility(View.INVISIBLE);
                 holder.insulin.setHeight(0);
@@ -162,7 +172,7 @@ public class PostListAdapter extends BaseAdapter {
 
             // set list of questions
             holder.questions =
-                    (LinearLayout) resultView.findViewById(R.id.postQuestionsList);
+                    (LinearLayout) view.findViewById(R.id.postQuestionsList);
             if (activity.get() != null && posts.get(position) != null
                     && posts.get(position).getQuestionnaire() != null) {
                 Questionnaire questionnaire = posts.get(position).getQuestionnaire();
@@ -175,9 +185,9 @@ public class PostListAdapter extends BaseAdapter {
                 }
             }
 
-            resultView.setTag(holder);
-        }
+            view.setTag(holder);
 
-        return resultView;
+
+        return view;
     }
 }

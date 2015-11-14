@@ -27,4 +27,7 @@ public interface UsersProxy {
 
     @GET(SERVICE_PATH + "/{username}")
     public void getUser(@Path("username") String username, Callback<UserClient> callback);
+
+    @GET(SERVICE_PATH + "/principal")
+    public void getPrincipal(Callback<UserClient> callback);
 }

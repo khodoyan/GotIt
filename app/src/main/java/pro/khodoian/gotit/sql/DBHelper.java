@@ -17,7 +17,7 @@ import pro.khodoian.gotit.models.Questionnaire;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "pro_khodoyan_gotit_db";
-    public static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     Context context;
 
     public DBHelper(Context context) {
@@ -34,6 +34,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(UserContract.CREATE_TABLE);
         db.execSQL(PostContract.CREATE_TABLE);
+        db.execSQL(PostUnsentContract.CREATE_TABLE);
         db.execSQL(QuestionContract.CREATE_TABLE);
     }
 
@@ -44,6 +45,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + UserContract.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
                 + PostContract.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "
+                + PostUnsentContract.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
                 + QuestionContract.TABLE_NAME);
 

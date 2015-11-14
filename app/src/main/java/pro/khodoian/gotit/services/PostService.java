@@ -16,10 +16,8 @@ import pro.khodoian.gotit.client.HttpStatus;
 import pro.khodoian.gotit.client.PostsProxy;
 import pro.khodoian.gotit.client.PostsService;
 import pro.khodoian.gotit.models.Post;
-import pro.khodoian.gotit.sql.PostContract;
 import pro.khodoian.gotit.sql.PostSqlOperations;
-import pro.khodoian.gotit.sql.SqlOperations;
-import pro.khodoian.gotit.view.LoginActivity;
+import pro.khodoian.gotit.sql.PostUnsentSqlOperations;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -38,6 +36,12 @@ public class PostService extends Service {
     }
 
     public interface AddPostListener {
+        void onSuccess(Post post);
+        void onUnauthorized();
+        void onFailure();
+    }
+
+    public interface DeletePostListener {
         void onSuccess();
         void onUnauthorized();
         void onFailure();
@@ -73,10 +77,6 @@ public class PostService extends Service {
         return binder;
     }
 
-    public void setCallbacks(UpdateFeedListener callbacks) {
-        this.callbacks = callbacks;
-    }
-
     public void addPosts(AddPostListener callbacks) {
         // TODO: implement method
     }
@@ -88,14 +88,14 @@ public class PostService extends Service {
                 @Override
                 public void success(Post post, Response response) {
                     Log.e(TAG, "Add post: success");
-                    callbacks.onSuccess();
+                    callbacks.onSuccess(post);
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
                     Log.e(TAG, "Add post: failure");
-                    if (error != null && error.getResponse() != null){
-                        if(error.getResponse().getStatus() == HttpStatus.SC_UNAUTHORIZED) {
+                    if (error != null && error.getResponse() != null) {
+                        if (error.getResponse().getStatus() == HttpStatus.SC_UNAUTHORIZED) {
                             callbacks.onUnauthorized();
                             return;
                         }
@@ -108,12 +108,26 @@ public class PostService extends Service {
 
     public void addPost(long id, AddPostListener callbacks) {
         Log.v(TAG, "Adding one posts by id");
-        Cursor cursor = new PostSqlOperations(PostService.this).queryById(null, id);
+        Cursor cursor = new PostUnsentSqlOperations(PostService.this).queryById(null, id);
         if (cursor.moveToNext())
             addPost(Post.makePost(cursor), callbacks);
     }
 
-    public void updatePosts() throws Exception {
+    public void deletePost(final long serverId) {
+        // TODO: Don't understand, why method inside service is called on the main thread
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (postsProxy != null) {
+                    postsProxy.deletePost(serverId);
+                }
+            }
+        }).start();
+
+    }
+
+
+    public void updatePosts(final UpdateFeedListener callbacks) throws Exception {
         if (postsProxy != null) {
             postsProxy.getAll(new Callback<ArrayList<Post>>() {
                 @Override
@@ -123,17 +137,25 @@ public class PostService extends Service {
                             PostSqlOperations postOperations =
                                     new PostSqlOperations(PostService.this);
                             // clear SQLite posts table
-                            postOperations.clearAllExceptNonPosted();
+                            Log.v(TAG, "Deleted items from local database: "
+                                    + postOperations.clearTable());
 
                             // add results to SQLite posts table
                             if (posts != null) {
+                                // convert posts into content values
                                 ArrayList<ContentValues> contentValues = new ArrayList<>();
                                 for (Post post : posts) {
                                     ContentValues cv = post.toContentValues();
                                     if (cv != null)
                                         contentValues.add(cv);
                                 }
-                                postOperations.insertBulk((ContentValues[]) contentValues.toArray());
+                                // convert ArrayList to array
+                                ContentValues[] contentValuesArray =
+                                        new ContentValues[contentValues.size()];
+                                contentValuesArray = contentValues.toArray(contentValuesArray);
+                                // insert into local database
+                                Log.v(TAG, "Posts added to local database: "
+                                        + postOperations.insertBulk(contentValuesArray));
                             }
                             callbacks.onSuccess();
                             break;

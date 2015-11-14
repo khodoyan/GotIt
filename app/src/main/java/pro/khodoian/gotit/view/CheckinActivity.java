@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pro.khodoian.gotit.client.AuthenticationDetailsManager;
-import pro.khodoian.gotit.sqlasynctasks.AddPostAsyncTask;
+import pro.khodoian.gotit.sqlasynctasks.AddUnsentPostAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.models.Question;
@@ -31,7 +31,7 @@ import pro.khodoian.gotit.sql.QuestionContract;
 import pro.khodoian.gotit.sql.QuestionSqlOperations;
 import pro.khodoian.gotit.sql.SqlOperations;
 
-public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTask.Callback {
+public class CheckinActivity extends AppCompatActivity implements AddUnsentPostAsyncTask.Callback {
 
     // TODO: implement fragment to restore values
 
@@ -135,7 +135,7 @@ public class CheckinActivity extends AppCompatActivity implements AddPostAsyncTa
         if (item.getItemId() == R.id.action_send) {
             Post newPost = CheckinActivity.this.getPost();
             if (newPost != null && !newPost.isBlank()) {
-                new AddPostAsyncTask(this, this).execute(newPost);
+                new AddUnsentPostAsyncTask(this, this).execute(newPost);
             } else {
                 if (parentLayout != null)
                     Snackbar.make(parentLayout,

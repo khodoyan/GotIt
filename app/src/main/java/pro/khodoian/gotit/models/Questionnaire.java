@@ -169,7 +169,10 @@ public class Questionnaire {
     }
 
     public int size() {
-        return arrayList.size();
+        if (arrayList != null)
+            return arrayList.size();
+        else
+            return 0;
     }
 
     public boolean isBlank() {

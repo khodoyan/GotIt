@@ -166,6 +166,7 @@
     <string name="app_title">Got it!</string>
     <string name="app_title_line2">Diabetes management</string>
     <string name="splash_logging_in">Logging you in...</string>
+    <string name="splash_loading_posts_and_people">Loading posts and people...</string>
 
 
 </resources>

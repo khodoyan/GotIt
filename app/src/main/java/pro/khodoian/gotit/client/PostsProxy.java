@@ -7,6 +7,7 @@ import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.models.PostClient;
 import retrofit.Callback;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -28,8 +29,11 @@ public interface PostsProxy {
     @GET(SERVICE_PATH + FOLLOWERS)
     public List<Post> getFollowersPosts();
 
-    @GET(SERVICE_PATH + "/" + ID)
+    @GET(SERVICE_PATH + "/{" + ID + "}")
     public Post getPost(@Path(ID) long id);
+
+    @DELETE(SERVICE_PATH + "/{" + ID + "}")
+    public Void deletePost(@Path(ID) long id);
 
     @POST(SERVICE_PATH)
     public Post addPost(@Body Post post);

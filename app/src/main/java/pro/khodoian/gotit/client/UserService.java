@@ -43,6 +43,12 @@ public class UserService {
         void onFailure();
     }
 
+    public interface GetPrincipalListener {
+        void onSuccess(UserClient user);
+        void onUnauthorized();
+        void onFailure();
+    }
+
     public UserService(AuthenticationDetailsManager authManager) {
         if (authManager.getToken() != null && !authManager.getToken().equals("")) {
             authorisedUsersService = getAuthorisedService(authManager.getToken());
@@ -119,6 +125,34 @@ public class UserService {
     public void getUser(String username, final GetUserListener callbacks) {
         if (authorisedUsersService != null) {
             authorisedUsersService.getUser(username, new Callback<UserClient>() {
+                @Override
+                public void success(UserClient user, Response response) {
+                    Log.e(TAG, "Callback.success started");
+                    if (response != null && response.getStatus() == HttpStatus.SC_OK)
+                        callbacks.onSuccess(user);
+                    else if (response != null
+                            && (response.getStatus() == HttpStatus.SC_UNAUTHORIZED
+                            || response.getStatus() == HttpStatus.SC_BAD_REQUEST))
+                        callbacks.onUnauthorized();
+                    else
+                        callbacks.onFailure();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, "Callback.failure started");
+                    callbacks.onFailure();
+                }
+            });
+        } else {
+            Log.e(TAG, "Couldn't create authorised service for some reason");
+            callbacks.onFailure();
+        }
+    }
+
+    public void getPrincipal(final GetPrincipalListener callbacks) {
+        if (authorisedUsersService != null) {
+            authorisedUsersService.getPrincipal(new Callback<UserClient>() {
                 @Override
                 public void success(UserClient user, Response response) {
                     Log.e(TAG, "Callback.success started");

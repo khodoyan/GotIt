@@ -45,7 +45,10 @@ public class Post implements ToContentValues {
         values.put(PostContract.Columns.FEELING, feelingString);
         values.put(PostContract.Columns.BLOOD_SUGAR, bloodSugar);
         values.put(PostContract.Columns.ADMINISTERED_INSULIN, (administeredInsulin) ? 1 : 0);
-        values.put(PostContract.Columns.QUESTIONNAIRE, questionnaire.toJson());
+        if(questionnaire != null)
+            values.put(PostContract.Columns.QUESTIONNAIRE, questionnaire.toJson());
+        else
+            values.put(PostContract.Columns.QUESTIONNAIRE, "");
         return values;
     }
 
