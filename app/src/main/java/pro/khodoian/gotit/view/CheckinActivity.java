@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pro.khodoian.gotit.client.AuthenticationDetailsManager;
-import pro.khodoian.gotit.sqlasynctasks.AddUnsentPostAsyncTask;
+import pro.khodoian.gotit.sqlasynctasks1.AddUnsentPostAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.models.Question;

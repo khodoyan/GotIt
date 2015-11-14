@@ -1,4 +1,4 @@
-package pro.khodoian.gotit.SQLAsyncTasks;
+package pro.khodoian.gotit.sqlasynctasks1;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -42,8 +42,8 @@ public class GetPostsAsyncTask extends AsyncTask<Long, Void, ArrayList<Post>> {
 
         PostSqlOperations operations = new PostSqlOperations(context);
         try {
-            Cursor cursor = operations.query(null, null, null, PostContract.Columns.ID,
-                    SqlOperations.SortOrder.DESC,limit);
+            Cursor cursor = operations.query(null, null, null, PostContract.Columns.TIMESTAMP,
+                    SqlOperations.SortOrder.DESC, limit);
             ArrayList<Post> result = new ArrayList<>();
             while (cursor.moveToNext()) {
                 Post post = Post.makePost(cursor);

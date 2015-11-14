@@ -1,10 +1,10 @@
-package pro.khodoian.gotit.SQLAsyncTasks;
+package pro.khodoian.gotit.sqlasynctasks1;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import pro.khodoian.gotit.sql.PostSqlOperations;
+import pro.khodoian.gotit.sql.PostUnsentSqlOperations;
 
 /**
  * Async task that starts deleting post by id from local database and calls one of callback methods
@@ -12,7 +12,7 @@ import pro.khodoian.gotit.sql.PostSqlOperations;
  * @author eduardkhodoyan
  */
 
-public class DeletePostByIdAsyncTask extends AsyncTask<Long, Void, Boolean> {
+public class DeleteUnsentPostByIdAsyncTask extends AsyncTask<Long, Void, Boolean> {
     private Context context;
     private Callback callback;
 
@@ -21,7 +21,7 @@ public class DeletePostByIdAsyncTask extends AsyncTask<Long, Void, Boolean> {
         void onPostDeletedByIdFailed();
     }
 
-    public DeletePostByIdAsyncTask(Context context, Callback callback) {
+    public DeleteUnsentPostByIdAsyncTask(Context context, Callback callback) {
         this.context = context;
         this.callback = callback;
     }
@@ -32,10 +32,10 @@ public class DeletePostByIdAsyncTask extends AsyncTask<Long, Void, Boolean> {
             return null;
 
         try {
-            PostSqlOperations operations = new PostSqlOperations(context);
+            PostUnsentSqlOperations operations = new PostUnsentSqlOperations(context);
             return operations.deleteById(longs[0]);
         } catch (android.database.SQLException e) {
-            Log.e(AddPostAsyncTask.class.toString(), e.toString());
+            Log.e(AddUnsentPostAsyncTask.class.toString(), e.toString());
             return null;
         }
     }
