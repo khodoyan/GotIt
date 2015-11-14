@@ -96,36 +96,38 @@ public class PeopleListAdapter extends BaseAdapter {
             if (activity.get() != null)
                 resultView = activity.get().getLayoutInflater()
                         .inflate(R.layout.people_list_item, null);
-            holder = new ViewHolder();
-            holder.parentLayout =
-                    (LinearLayout) resultView.findViewById(R.id.people_list_item_parent_layout);
-            holder.userpic =
-                    (ImageView) resultView.findViewById(R.id.people_list_item_userpic);
-            holder.name =
-                    (TextView) resultView.findViewById(R.id.people_list_item_name);
-            holder.isFollowed =
-                    (CheckBox) resultView.findViewById(R.id.people_list_item_follow);
-            holder.shareFeeling =
-                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_feeling);
-            holder.shareBloodSugar =
-                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_blood_sugar);
-            holder.shareInsulin =
-                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_insulin);
-            holder.shareQuestions =
-                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_questions);
-            holder.settingsLayout =
-                    (LinearLayout) resultView.findViewById(R.id.people_list_item_settings_layout);
-            holder.done =
-                    (Button) resultView.findViewById(R.id.people_list_item_done_button);
-            holder.delete =
-                    (Button) resultView.findViewById(R.id.people_list_item_delete_button);
-
-            if (position != expandedPosition) {
-                holder.settingsLayout.setVisibility(View.GONE);
-                holder.settingsLayout.getLayoutParams().height = 0;
-            }
-            resultView.setTag(holder);
         }
+
+        holder = new ViewHolder();
+        holder.parentLayout =
+                (LinearLayout) resultView.findViewById(R.id.people_list_item_parent_layout);
+        holder.userpic =
+                (ImageView) resultView.findViewById(R.id.people_list_item_userpic);
+        holder.name =
+                (TextView) resultView.findViewById(R.id.people_list_item_name);
+        holder.isFollowed =
+                (CheckBox) resultView.findViewById(R.id.people_list_item_follow);
+        holder.shareFeeling =
+                (CheckBox) resultView.findViewById(R.id.people_list_item_share_feeling);
+        holder.shareBloodSugar =
+                (CheckBox) resultView.findViewById(R.id.people_list_item_share_blood_sugar);
+        holder.shareInsulin =
+                (CheckBox) resultView.findViewById(R.id.people_list_item_share_insulin);
+        holder.shareQuestions =
+                (CheckBox) resultView.findViewById(R.id.people_list_item_share_questions);
+        holder.settingsLayout =
+                (LinearLayout) resultView.findViewById(R.id.people_list_item_settings_layout);
+        holder.done =
+                (Button) resultView.findViewById(R.id.people_list_item_done_button);
+        holder.delete =
+                (Button) resultView.findViewById(R.id.people_list_item_delete_button);
+
+        if (position != expandedPosition) {
+            holder.settingsLayout.setVisibility(View.GONE);
+            holder.settingsLayout.getLayoutParams().height = 0;
+        }
+        resultView.setTag(holder);
+
 
         final View finalView = resultView;
 
