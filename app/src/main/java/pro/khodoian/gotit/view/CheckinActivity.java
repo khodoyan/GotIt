@@ -1,8 +1,11 @@
 package pro.khodoian.gotit.view;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -20,7 +23,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pro.khodoian.gotit.broadcastreceivers.RegularNotificationReceiver;
 import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.services.CheckinService;
 import pro.khodoian.gotit.sqlasynctasks.AddUnsentPostAsyncTask;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.Post;
@@ -36,8 +41,9 @@ public class CheckinActivity extends AppCompatActivity implements AddUnsentPostA
     // TODO: implement fragment to restore values
 
     public static final int REQUEST_CODE = 1001;
-    public static final int SUCCESSFUL = 1002;
-    public static final int FAILED = 1003;
+    public static final int REQUEST_FROM_NOTIFICATION = 1002;
+    public static final int SUCCESSFUL = 1003;
+    public static final int FAILED = 1004;
     public static final String KEY_POST_ID = "post_id";
 
     private boolean isBackPressed = false;
@@ -54,6 +60,23 @@ public class CheckinActivity extends AppCompatActivity implements AddUnsentPostA
     CoordinatorLayout parentLayout;
     QuestionInputListAdapter adapter;
 
+    CheckinService checkinService;
+
+    private ServiceConnection checkinServiceConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // Because we have bound to an explicit
+            // service that is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            CheckinService.LocalBinder binder = (CheckinService.LocalBinder) service;
+            checkinService = binder.getService();
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        public void onServiceDisconnected(ComponentName className) {
+            checkinService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +143,15 @@ public class CheckinActivity extends AppCompatActivity implements AddUnsentPostA
     protected void onResume() {
         super.onResume();
         isBackPressed = false;
+
+        // bind to CheckinService
+        bindService(CheckinService.makeIntent(this), checkinServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindService(checkinServiceConnection);
     }
 
     @Override
@@ -232,6 +264,11 @@ public class CheckinActivity extends AppCompatActivity implements AddUnsentPostA
             Intent result = new Intent();
             result.putExtra(KEY_POST_ID, id);
             this.setResult(SUCCESSFUL, result);
+            // send request to server if called by notification
+            if (getIntent().getStringExtra(RegularNotificationReceiver.REQUESTED_BY) ==
+                    RegularNotificationReceiver.REQUESTED_BY_KEY && checkinService != null) {
+                checkinService.addPost(id);
+            }
             this.finish();
         } else {
             onPostAddedFailed();

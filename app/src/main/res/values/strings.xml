@@ -168,5 +168,9 @@
     <string name="splash_logging_in">Logging you in...</string>
     <string name="splash_loading_posts_and_people">Loading posts and people...</string>
 
+    <!-- Notifications strings -->
+    <string name="notification_title">Got It! Check in now</string>
+    <string name="notification_check_in_text">Tap this notification to check in now</string>
+
 
 </resources>
