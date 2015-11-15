@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.sqlasynctasks.DeleteUnsentPostByIdAsyncTask;
 import pro.khodoian.gotit.sqlasynctasks.GetPostsAsyncTask;
 import pro.khodoian.gotit.R;

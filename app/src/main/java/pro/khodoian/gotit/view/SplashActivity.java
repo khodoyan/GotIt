@@ -1,16 +1,21 @@
 package pro.khodoian.gotit.view;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
 import pro.khodoian.gotit.R;
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.broadcastreceivers.RegularNotificationReceiver;
+import pro.khodoian.gotit.preferences.AlarmsManager;
+import pro.khodoian.gotit.preferences.AlarmsSettingsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.UserService;
-import pro.khodoian.gotit.client.UsersProxy;
 import pro.khodoian.gotit.models.UserClient;
 
 /**
@@ -18,8 +23,6 @@ import pro.khodoian.gotit.models.UserClient;
  * status bar and navigation/system bar) with user interaction.
  */
 public class SplashActivity extends AppCompatActivity {
-
-    // TODO: get current user details and update them in AuthenticationDetailsManager
 
     public static final String TAG = SplashActivity.class.getCanonicalName();
 
@@ -56,8 +59,8 @@ public class SplashActivity extends AppCompatActivity {
                             authManager.setUserDetails(user);
                             if (status != null)
                                 status.setText(R.string.splash_loading_posts_and_people);
-                            // TODO: load posts here
-
+                            // set alarms
+                            new AlarmsManager(SplashActivity.this).setAlarmsIfNotSet();
                             startMainActivityAndFinish();
                         }
 
@@ -97,4 +100,6 @@ public class SplashActivity extends AppCompatActivity {
                 LoginActivity.makeIntent(SplashActivity.this),
                 REQUEST_LOGIN);
     }
+
+
 }

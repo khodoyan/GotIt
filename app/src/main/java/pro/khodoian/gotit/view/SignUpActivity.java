@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import pro.khodoian.gotit.R;
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.HttpStatus;
 import pro.khodoian.gotit.client.UserService;
 import pro.khodoian.gotit.models.SignupUser;

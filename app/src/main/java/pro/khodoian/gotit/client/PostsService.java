@@ -1,9 +1,9 @@
 package pro.khodoian.gotit.client;
 
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.retrofit.AccessPoint;
 import retrofit.RestAdapter;
 import retrofit.client.ApacheClient;
-import retrofit.client.OkClient;
 
 /**
  * Class is a wrapper for PostsProxy Retrofit interface. It is designed in order to make sure

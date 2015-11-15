@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pro.khodoian.gotit.broadcastreceivers.RegularNotificationReceiver;
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.services.CheckinService;
 import pro.khodoian.gotit.sqlasynctasks.AddUnsentPostAsyncTask;
 import pro.khodoian.gotit.R;
@@ -190,7 +190,8 @@ public class CheckinActivity extends AppCompatActivity implements AddUnsentPostA
         result.setFeeling(getFeeling());
         result.setIsShared(isShared());
         result.setQuestionnaire(this.getQuestionnaire());
-        result.setUsername(new AuthenticationDetailsManager(CheckinActivity.this).getUsername());
+        AuthenticationDetailsManager authManager = new AuthenticationDetailsManager(CheckinActivity.this);
+        result.setUsername(authManager.getUsername());
         if (result.isBlank())
             return null;
         return result;
@@ -265,8 +266,10 @@ public class CheckinActivity extends AppCompatActivity implements AddUnsentPostA
             result.putExtra(KEY_POST_ID, id);
             this.setResult(SUCCESSFUL, result);
             // send request to server if called by notification
-            if (getIntent().getStringExtra(RegularNotificationReceiver.REQUESTED_BY) ==
-                    RegularNotificationReceiver.REQUESTED_BY_KEY && checkinService != null) {
+            String requestedBy =
+                    getIntent().getStringExtra(RegularNotificationReceiver.REQUESTED_BY_KEY);
+            if (requestedBy != null && requestedBy.equals(RegularNotificationReceiver.REQUESTED_BY)
+                    && checkinService != null) {
                 checkinService.addPost(id);
             }
             this.finish();

@@ -3,12 +3,10 @@ package pro.khodoian.gotit.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
 import pro.khodoian.gotit.R;
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
 
 /**
  * Class for managing navigation menu
@@ -65,7 +63,7 @@ public class NavigationMenuProxy {
     }
 
     public void startSettingsActivity() {
-        if (activity.get() != null && !(activity.get() instanceof SettingsActivity))
+        if (activity.get() != null  && !(activity.get() instanceof SettingsActivity))
             activity.get().startActivity(SettingsActivity.makeIntent(activity.get()));
     }
 }

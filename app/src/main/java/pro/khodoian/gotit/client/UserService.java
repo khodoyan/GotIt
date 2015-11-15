@@ -4,13 +4,12 @@ import android.util.Log;
 
 import pro.khodoian.gotit.models.SignupUser;
 import pro.khodoian.gotit.models.UserClient;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.retrofit.AccessPoint;
-import pro.khodoian.gotit.sql.UserContract;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.ApacheClient;
-import retrofit.client.OkClient;
 import retrofit.client.Response;
 
 /**

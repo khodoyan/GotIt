@@ -18,7 +18,10 @@ import pro.khodoian.gotit.view.CheckinActivity;
  */
 public class RegularNotificationReceiver extends BroadcastReceiver {
     public static final String REQUESTED_BY_KEY = "Requested by";
-    public static final String REQUESTED_BY = RegularNotificationReceiver.class.getCanonicalName();
+    public static final String REQUESTED_BY = "Check in notification";
+    public static final String ACTION_MORNING_ALARM = "pro.khodoian.MORNING_ALARM";
+    public static final String ACTION_AFTERNOON_ALARM = "pro.khodoian.AFTERNOON_ALARM";
+    public static final String ACTION_EVENING_ALARM = "pro.khodoian.EVENING_ALARM";
 
     public void onReceive(Context context, Intent intent) {
         // Build notification: set text, title and icon
@@ -30,7 +33,7 @@ public class RegularNotificationReceiver extends BroadcastReceiver {
 
         // create intent to start checkin activity and a respective pending intent
         Intent resultIntent = CheckinActivity.makeIntent(context);
-        resultIntent.putExtra(REQUESTED_BY, REQUESTED_BY_KEY);
+        resultIntent.putExtra(REQUESTED_BY_KEY, REQUESTED_BY);
 
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(

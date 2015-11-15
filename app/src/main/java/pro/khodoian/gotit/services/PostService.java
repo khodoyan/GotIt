@@ -11,7 +11,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.HttpStatus;
 import pro.khodoian.gotit.client.PostsProxy;
 import pro.khodoian.gotit.client.PostsService;

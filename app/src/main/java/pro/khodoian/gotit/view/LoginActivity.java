@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pro.khodoian.gotit.R;
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.GetTokenRequest;
 import pro.khodoian.gotit.client.UserService;
 import retrofit.client.ApacheClient;

@@ -1,4 +1,4 @@
-package pro.khodoian.gotit.client;
+package pro.khodoian.gotit.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -103,10 +103,12 @@ public class AuthenticationDetailsManager {
     public void setUserDetails(UserClient user) {
         if (user != null && preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
+            username = user.getUsername();
             firstname = user.getFirstName();
             lastname = user.getLastName();
             isPatient = user.getIsPatient();
 
+            editor.putString(KEY_USERNAME, username);
             editor.putString(KEY_FIRSTNAME, firstname);
             editor.putString(KEY_LASTNAME, lastname);
             editor.putBoolean(KEY_IS_PATIENT, isPatient);

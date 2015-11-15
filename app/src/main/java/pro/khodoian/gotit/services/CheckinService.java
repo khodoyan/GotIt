@@ -6,10 +6,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import pro.khodoian.gotit.client.AuthenticationDetailsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.HttpStatus;
 import pro.khodoian.gotit.client.PostsProxy;
 import pro.khodoian.gotit.client.PostsService;
@@ -40,7 +39,7 @@ public class CheckinService extends Service {
     }
 
     public static Intent makeIntent(Context context) {
-        return new Intent(context, PostService.class);
+        return new Intent(context, CheckinService.class);
     }
 
     @Override

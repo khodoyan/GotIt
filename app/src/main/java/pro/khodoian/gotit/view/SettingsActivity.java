@@ -1,261 +1,142 @@
 package pro.khodoian.gotit.view;
 
-
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.preferences.AlarmsManager;
+import pro.khodoian.gotit.preferences.AlarmsSettingsManager;
 
-import java.util.List;
+public class SettingsActivity extends AppCompatActivity
+        implements TimePickerFragment.Listener{
 
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p/>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
-public class SettingsActivity extends AppCompatPreferenceActivity {
+    public enum DayTime {MORNING, AFTERNOON, EVENING}
+
+    private long morningTime;
+    private long afternoonTime;
+    private long eveningTime;
+
+    private Button morningButton;
+    private Button afternoonButton;
+    private Button eveningButton;
+    private Switch enableNotificationsSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupActionBar();
-    }
+        setContentView(R.layout.activity_settings);
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
+        // get UI elements
+        morningButton = (Button) findViewById(R.id.settings_morning_alarm_button);
+        afternoonButton = (Button) findViewById(R.id.settings_afternoon_alarm_button);
+        eveningButton = (Button) findViewById(R.id.settings_evening_alarm_button);
+        enableNotificationsSwitch = (Switch) findViewById(R.id.notifications_enabled_switch);
 
+        // update values of the UI elements
+        updateUI(new AlarmsSettingsManager(this));
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
+        // set listeners to call TimePicker
+        morningButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callTimePicker(DayTime.MORNING);
+            }
+        });
 
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
+        afternoonButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callTimePicker(DayTime.AFTERNOON);
+            }
+        });
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
+        eveningButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callTimePicker(DayTime.EVENING);
+            }
+        });
 
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else if (preference instanceof RingtonePreference) {
-                // For ringtone preferences, look up the correct display value
-                // using RingtoneManager.
-                if (TextUtils.isEmpty(stringValue)) {
-                    // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary(R.string.pref_ringtone_silent);
-
+        enableNotificationsSwitch.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean enabled) {
+                new AlarmsSettingsManager(SettingsActivity.this).setNotificationEnabled(enabled);
+                if (enabled) {
+                    new AlarmsManager(SettingsActivity.this).setAlarms();
                 } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
-
-                    if (ringtone == null) {
-                        // Clear the summary if there was a lookup error.
-                        preference.setSummary(null);
-                    } else {
-                        // Set the summary to reflect the new ringtone display
-                        // name.
-                        String name = ringtone.getTitle(preference.getContext());
-                        preference.setSummary(name);
-                    }
+                    new AlarmsManager(SettingsActivity.this).cancelAlarms();
                 }
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
             }
-            return true;
-        }
-    };
+        });
 
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
     }
 
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public static Intent makeIntent (Context context) {
+    public static Intent makeIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
+    }
+
+    private void callTimePicker(DayTime dayTime) {
+        TimePickerFragment timePickerFragment = new TimePickerFragment();
+        timePickerFragment.setDayTime(dayTime);
+        timePickerFragment.setInitialTime(new AlarmsSettingsManager(this));
+        timePickerFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+
+    public void setTimeToButton(DayTime dayTime, long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        String timeString =
+                formatIntToTwoDigits(calendar.get(Calendar.HOUR_OF_DAY)) + ":"
+                + formatIntToTwoDigits(calendar.get(Calendar.MINUTE));
+        Button button;
+        switch (dayTime) {
+            case MORNING:
+                button = morningButton;
+                break;
+            case AFTERNOON:
+                button = afternoonButton;
+                break;
+            case EVENING:
+                button = eveningButton;
+                break;
+            default:
+                button = morningButton;
+        }
+        button.setText(timeString);
+    }
+
+    private String formatIntToTwoDigits(int digit) {
+        if (digit < 0)
+            return "00";
+        return (digit > 9)
+                ? String.valueOf(digit)
+                : "0" + String.valueOf(digit);
+    }
+
+    @Override
+    public void onTimeChosen(DayTime dayTime, long timeInMillis) {
+        setTimeToButton(dayTime, timeInMillis);
+        new AlarmsSettingsManager(this).setTime(dayTime, timeInMillis);
+        new AlarmsManager(this).setAlarm(timeInMillis, dayTime);
+    }
+
+    private void updateUI(AlarmsSettingsManager alarmsSettingsManager) {
+        if (alarmsSettingsManager != null) {
+            enableNotificationsSwitch.setChecked(alarmsSettingsManager.isNotificationEnabled());
+            setTimeToButton(DayTime.MORNING, alarmsSettingsManager.getMorningTime());
+            setTimeToButton(DayTime.AFTERNOON, alarmsSettingsManager.getAfternoonTime());
+            setTimeToButton(DayTime.EVENING, alarmsSettingsManager.getEveningTime());
+        }
     }
 }
