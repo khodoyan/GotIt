@@ -4,6 +4,7 @@ import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.retrofit.AccessPoint;
 import retrofit.RestAdapter;
 import retrofit.client.ApacheClient;
+import retrofit.client.OkClient;
 
 /**
  * Class is a wrapper for PostsProxy Retrofit interface. It is designed in order to make sure
@@ -26,7 +27,7 @@ public class PostsService {
         return new SecuredRestAdapter()
                 .setLoginEndpoint(AccessPoint.ENDPOINT + AccessPoint.TOKEN_PATH)
                 .setToken(token)
-                .setClient(new ApacheClient())
+                .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build()

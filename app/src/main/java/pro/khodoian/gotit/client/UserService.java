@@ -10,6 +10,7 @@ import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.ApacheClient;
+import retrofit.client.OkClient;
 import retrofit.client.Response;
 
 /**
@@ -57,7 +58,7 @@ public class UserService {
 
     private UsersProxy getUnauthorisedUsersService() {
         return new RestAdapter.Builder()
-                .setClient(new ApacheClient())
+                .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build()
@@ -68,7 +69,7 @@ public class UserService {
         return new SecuredRestAdapter()
                 .setLoginEndpoint(AccessPoint.ENDPOINT + AccessPoint.TOKEN_PATH)
                 .setToken(token)
-                .setClient(new ApacheClient())
+                .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build()

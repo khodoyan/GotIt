@@ -23,6 +23,7 @@ import java.util.GregorianCalendar;
 
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.models.User;
+import pro.khodoian.gotit.preferences.AlarmsManager;
 import pro.khodoian.gotit.presenter.PeopleListAdapter;
 import pro.khodoian.gotit.sql.SqlOperations;
 import pro.khodoian.gotit.sql.UserContract;
