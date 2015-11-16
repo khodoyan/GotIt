@@ -178,6 +178,7 @@ public class PostListAdapter extends BaseAdapter {
                 Questionnaire questionnaire = posts.get(position).getQuestionnaire();
                 QuestionPostListAdapter adapter =
                         new QuestionPostListAdapter(activity.get(), questionnaire);
+                holder.questions.removeAllViews();
                 for (int i = 0; i < questionnaire.size(); i++) {
                     Question question = questionnaire.get(i);
                     if (question != null)

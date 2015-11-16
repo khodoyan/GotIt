@@ -60,7 +60,7 @@ public class UserService {
         return new RestAdapter.Builder()
                 .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.NONE)
                 .build()
                 .create(UsersProxy.class);
     }
@@ -71,7 +71,7 @@ public class UserService {
                 .setToken(token)
                 .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.NONE)
                 .build()
                 .create(UsersProxy.class);
     }

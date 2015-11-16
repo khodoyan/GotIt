@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import pro.khodoian.gotit.models.PostClient;
 import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.HttpStatus;
 import pro.khodoian.gotit.client.PostsProxy;
@@ -129,9 +130,9 @@ public class PostService extends Service {
 
     public void updatePosts(final UpdateFeedListener callbacks) throws Exception {
         if (postsProxy != null) {
-            postsProxy.getAll(new Callback<ArrayList<Post>>() {
+            postsProxy.getAll(new Callback<ArrayList<PostClient>>() {
                 @Override
-                public void success(ArrayList<Post> posts, Response response) {
+                public void success(ArrayList<PostClient> posts, Response response) {
                     switch (response.getStatus()){
                         case HttpStatus.SC_OK:
                             PostSqlOperations postOperations =
@@ -144,7 +145,8 @@ public class PostService extends Service {
                             if (posts != null) {
                                 // convert posts into content values
                                 ArrayList<ContentValues> contentValues = new ArrayList<>();
-                                for (Post post : posts) {
+                                for (PostClient postClient : posts) {
+                                    Post post = postClient.toPost();
                                     ContentValues cv = post.toContentValues();
                                     if (cv != null)
                                         contentValues.add(cv);

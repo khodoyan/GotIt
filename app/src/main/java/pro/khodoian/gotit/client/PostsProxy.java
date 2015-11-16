@@ -45,5 +45,5 @@ public interface PostsProxy {
      * @return all posts that current user has access to
      */
     @GET(value = SERVICE_PATH + "/all")
-    public void getAll(Callback<ArrayList<Post>> callback);
+    public void getAll(Callback<ArrayList<PostClient>> callback);
 }

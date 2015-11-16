@@ -7,6 +7,7 @@ package pro.khodoian.gotit.models;
  */
 public class PostClient {
     private long id;
+    private long serverId;
     private String username;
     private long updatedAt;
     private long deletedAt;
@@ -34,6 +35,21 @@ public class PostClient {
         result.bloodSugar = post.getBloodSugar();
         result.administeredInsulin = post.isAdministeredInsulin();
         result.questionnaire = post.getQuestionnaire().toJson();
+        return result;
+    }
+
+    public Post toPost() {
+        Post result = new Post();
+        result.setId(this.serverId);
+        result.setUsername(this.username);
+        result.setUpdatedAt(this.updatedAt);
+        result.setDeletedAt(this.deletedAt);
+        result.setTimestamp(this.timestamp);
+        result.setIsShared(this.isShared);
+        result.setFeeling(this.feeling);
+        result.setBloodSugar(this.bloodSugar);
+        result.setAdministeredInsulin(this.administeredInsulin);
+        result.setQuestionnaire(new Questionnaire(this.questionnaire));
         return result;
     }
 
@@ -115,5 +131,13 @@ public class PostClient {
 
     public void setQuestionnaire(String questionnaire) {
         this.questionnaire = questionnaire;
+    }
+
+    public long getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(long serverId) {
+        this.serverId = serverId;
     }
 }

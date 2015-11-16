@@ -29,7 +29,7 @@ public class PostsService {
                 .setToken(token)
                 .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.NONE)
                 .build()
                 .create(PostsProxy.class);
     }

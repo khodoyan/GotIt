@@ -302,5 +302,4 @@ public class Post implements ToContentValues {
         return (bloodSugar== 0f && feeling == null && !administeredInsulin &&
                 questionnaire.isBlank());
     }
-
 }
