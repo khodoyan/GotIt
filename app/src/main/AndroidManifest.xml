@@ -67,6 +67,7 @@
         </activity>
         <service android:name=".services.PostService" />
         <service android:name=".services.CheckinService" />
+        <service android:name=".services.FollowersService" />
         <receiver android:name=".broadcastreceivers.RegularNotificationReceiver" />
     </application>
 

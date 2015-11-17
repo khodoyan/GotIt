@@ -1,11 +1,13 @@
 package pro.khodoian.gotit.view;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,14 +19,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.client.UserService;
 import pro.khodoian.gotit.models.User;
-import pro.khodoian.gotit.preferences.AlarmsManager;
 import pro.khodoian.gotit.presenter.PeopleListAdapter;
+import pro.khodoian.gotit.services.FollowersService;
 import pro.khodoian.gotit.sql.SqlOperations;
 import pro.khodoian.gotit.sql.UserContract;
 import pro.khodoian.gotit.sql.UserSqlOperations;
@@ -37,14 +40,33 @@ public class PeopleActivity extends AppCompatActivity
         return new Intent(context, PeopleActivity.class);
     }
 
+    private ListView listView;
+    private PeopleListAdapter listAdapter;
+
+    private FollowersService followersService;
+    private ServiceConnection followerServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            FollowersService.LocalBinder binder = (FollowersService.LocalBinder) iBinder;
+            followersService = binder.getService();
+            if (followersService != null) {
+                updateListView();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            followersService = null;
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_people);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -69,49 +91,34 @@ public class PeopleActivity extends AppCompatActivity
                 Log.v(TAG, String.format("User created: %s", user.toString()));
         }
 
-        final ListView listView = (ListView) findViewById(R.id.people_list_view);
+        listView = (ListView) findViewById(R.id.people_list_view);
+        listAdapter = new PeopleListAdapter(this, userList);
+        listAdapter.notifyDataSetChanged();
         if (listView != null)
-            listView.setAdapter(new PeopleListAdapter(this, userList));
+            listView.setAdapter(listAdapter);
 
         // set FAB
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_people);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: remove debug option
-                if (listView != null && listView.getCount() < sampleUsersList.size()) {
-                    final PeopleListAdapter adapter = (PeopleListAdapter) (listView.getAdapter());
-                    final int newId = adapter.add(sampleUsersList.get(listView.getCount()));
-                    if(newId >= 0) {
-                        Snackbar.make(view, "User added", Snackbar.LENGTH_LONG)
-                                .setAction(R.string.undo, new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        // TODO: implement snackbar action: UNDO
-                                        adapter.remove(newId);
-                                    }
-                                }).setCallback(new Snackbar.Callback() {
-                            @Override
-                            public void onDismissed(Snackbar snackbar, int event) {
-                                super.onDismissed(snackbar, event);
-                                fab.show();
-                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                    new UserSqlOperations(PeopleActivity.this).insert(
-                                            sampleUsersList.get(listView.getCount()).toContentValues()
-                                    );
-                                }
-                            }
-
-                            @Override
-                            public void onShown(Snackbar snackbar) {
-                                super.onShown(snackbar);
-                                fab.hide();
-                            }
-                        }).show();
-                    }
-                }
+                // TODO: implement adding new user
+                Toast.makeText(PeopleActivity.this,
+                        "Sorry, this was my next thing to do. It is actually done on server side",
+                        Toast.LENGTH_SHORT).show();
             }
         });
+
+        // connect to FollowersService
+        bindService(FollowersService.makeIntent(this), followerServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (followerServiceConnection != null) {
+            unbindService(followerServiceConnection);
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -160,4 +167,45 @@ public class PeopleActivity extends AppCompatActivity
         // consume event
         return true;
     }
+
+    public void updateListView() {
+        if (followersService != null) {
+            followersService.updateFollowers(new UserService.GetFollowersListener() {
+                @Override
+                public void onSuccess(ArrayList<User> users) {
+                    Log.v(TAG, "onSuccess() is called");
+                    ArrayList<User> userList = new ArrayList<>();
+                    Cursor cursor = new UserSqlOperations(PeopleActivity.this)
+                            .queryAll(
+                                    null,
+                                    UserContract.Columns.USERNAME,
+                                    SqlOperations.SortOrder.ASC
+                            );
+                    while(cursor.moveToNext()) {
+                        Log.v(TAG, "Next cursor position");
+                        User user = User.makeUser(cursor);
+                        userList.add(user);
+                        if (user != null)
+                            Log.v(TAG, String.format("User created: %s", user.toString()));
+                    }
+
+                    PeopleListAdapter peopleAdapter = (PeopleListAdapter) listView.getAdapter();
+                    peopleAdapter.clearList();
+                    peopleAdapter.setUsers(userList);
+                }
+
+                @Override
+                public void onUnauthorized() {
+                    Log.v(TAG, "onUnauthorized() is called");
+                }
+
+                @Override
+                public void onFailure() {
+                    Log.v(TAG, "onFailure() is called");
+                }
+            });
+        }
+    }
+
+
 }

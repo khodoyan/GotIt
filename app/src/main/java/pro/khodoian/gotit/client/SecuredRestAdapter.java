@@ -31,7 +31,7 @@ import retrofit.converter.Converter;
  *
  private VideoSvcApi videoService = new SecuredRestBuilder()
  .setLoginEndpoint(TEST_URL + VideoSvcApi.TOKEN_PATH)
- .setUsername(USERNAME)
+ .setFollower(USERNAME)
  .setPassword(PASSWORD)
  .setClientId(CLIENT_ID)
  .setClient(new ApacheClient(UnsafeHttpsClient.createUnsafeClient()))
@@ -165,6 +165,7 @@ public class SecuredRestAdapter extends RestAdapter.Builder {
         OAuthHandler handler = new OAuthHandler(client, token);
         setRequestInterceptor(handler);
 
+        // TODO: remove this line - it's not secure. Was added just for debugging purposes
         android.util.Log.v(TAG, "Token is: " + token);
 
         return super.build();

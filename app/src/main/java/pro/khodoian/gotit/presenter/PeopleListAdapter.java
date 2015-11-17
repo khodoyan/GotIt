@@ -21,6 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.models.Post;
 import pro.khodoian.gotit.models.User;
 import pro.khodoian.gotit.sql.UserSqlOperations;
 import pro.khodoian.gotit.view.LinearLayoutExpandCollapseAnimation;
@@ -96,102 +97,103 @@ public class PeopleListAdapter extends BaseAdapter {
             if (activity.get() != null)
                 resultView = activity.get().getLayoutInflater()
                         .inflate(R.layout.people_list_item, null);
-        }
+            //}
 
-        holder = new ViewHolder();
-        holder.parentLayout =
-                (LinearLayout) resultView.findViewById(R.id.people_list_item_parent_layout);
-        holder.userpic =
-                (ImageView) resultView.findViewById(R.id.people_list_item_userpic);
-        holder.name =
-                (TextView) resultView.findViewById(R.id.people_list_item_name);
-        holder.isFollowed =
-                (CheckBox) resultView.findViewById(R.id.people_list_item_follow);
-        holder.shareFeeling =
-                (CheckBox) resultView.findViewById(R.id.people_list_item_share_feeling);
-        holder.shareBloodSugar =
-                (CheckBox) resultView.findViewById(R.id.people_list_item_share_blood_sugar);
-        holder.shareInsulin =
-                (CheckBox) resultView.findViewById(R.id.people_list_item_share_insulin);
-        holder.shareQuestions =
-                (CheckBox) resultView.findViewById(R.id.people_list_item_share_questions);
-        holder.settingsLayout =
-                (LinearLayout) resultView.findViewById(R.id.people_list_item_settings_layout);
-        holder.done =
-                (Button) resultView.findViewById(R.id.people_list_item_done_button);
-        holder.delete =
-                (Button) resultView.findViewById(R.id.people_list_item_delete_button);
+            holder = new ViewHolder();
+            holder.parentLayout =
+                    (LinearLayout) resultView.findViewById(R.id.people_list_item_parent_layout);
+            holder.userpic =
+                    (ImageView) resultView.findViewById(R.id.people_list_item_userpic);
+            holder.name =
+                    (TextView) resultView.findViewById(R.id.people_list_item_name);
+            holder.isFollowed =
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_follow);
+            holder.shareFeeling =
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_feeling);
+            holder.shareBloodSugar =
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_blood_sugar);
+            holder.shareInsulin =
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_insulin);
+            holder.shareQuestions =
+                    (CheckBox) resultView.findViewById(R.id.people_list_item_share_questions);
+            holder.settingsLayout =
+                    (LinearLayout) resultView.findViewById(R.id.people_list_item_settings_layout);
+            holder.done =
+                    (Button) resultView.findViewById(R.id.people_list_item_done_button);
+            holder.delete =
+                    (Button) resultView.findViewById(R.id.people_list_item_delete_button);
 
-        if (position != expandedPosition) {
-            holder.settingsLayout.setVisibility(View.GONE);
-            holder.settingsLayout.getLayoutParams().height = 0;
-        }
-        resultView.setTag(holder);
-
-
-        final View finalView = resultView;
-
-        if (users.size() > 0) {
-            User user = users.get(position);
-            if (user != null) {
-                if (user.getUserpic() != null)
-                    holder.userpic.setImageDrawable(user.getUserpic());
-                holder.name.setText(user.getFullName());
-                holder.isFollowed.setChecked(user.isFollowed());
-                holder.shareFeeling.setChecked(user.isShareFeeling());
-                holder.shareBloodSugar.setChecked(user.isShareBloodSugar());
-                holder.shareInsulin.setChecked(user.isShareInsulin());
-                holder.shareQuestions.setChecked(user.isShareQuestions());
+            if (position != expandedPosition) {
+                holder.settingsLayout.setVisibility(View.GONE);
+                holder.settingsLayout.getLayoutParams().height = 0;
             }
-            holder.done.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onDoneButtonClick(position,
-                            (LinearLayout) finalView
-                                    .findViewById(R.id.people_list_item_settings_layout));
-                }
-            });
-            holder.delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onDeleteButtonClick(position,
-                            (LinearLayout) finalView
-                                    .findViewById(R.id.people_list_item_settings_layout));
-                }
-            });
+            resultView.setTag(holder);
 
-            View.OnClickListener listener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.v(TAG, "onClick(View view) started. View "
-                            + (view == null ? "is null" : "is not null"));
-                    Log.v(TAG, "expandedPosition = " + String.valueOf(expandedPosition));
-                    Log.v(TAG, "position = " + String.valueOf(position));
 
-                    // collapse expanded layout if any
-                    if (expandedPosition >= 0 && activity.get() != null) {
-                        collapseAllItemsSettings();
+            final View finalView = resultView;
+
+            if (users.size() > 0) {
+                User user = users.get(position);
+                if (user != null) {
+                    if (user.getUserpic() != null)
+                        holder.userpic.setImageDrawable(user.getUserpic());
+                    holder.name.setText(user.getFullName());
+                    holder.isFollowed.setChecked(user.getFollowed());
+                    holder.shareFeeling.setChecked(user.getShareFeeling());
+                    holder.shareBloodSugar.setChecked(user.isShareBloodSugar());
+                    holder.shareInsulin.setChecked(user.getShareInsulin());
+                    holder.shareQuestions.setChecked(user.getShareQuestions());
+                }
+                holder.done.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onDoneButtonClick(position,
+                                (LinearLayout) finalView
+                                        .findViewById(R.id.people_list_item_settings_layout));
                     }
+                });
+                holder.delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onDeleteButtonClick(position,
+                                (LinearLayout) finalView
+                                        .findViewById(R.id.people_list_item_settings_layout));
+                    }
+                });
 
-                    // expand clicked item if required
-                    if (position != expandedPosition && finalView != null) {
-                        View settingsLayout = finalView.findViewById(
-                                R.id.people_list_item_settings_layout);
-                        if (settingsLayout != null) {
-                            LinearLayoutExpandCollapseAnimation.expand(settingsLayout);
-                            expandedPosition = position;
-                            Log.v(TAG, "expand(View view) started");
+                View.OnClickListener listener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.v(TAG, "onClick(View view) started. View "
+                                + (view == null ? "is null" : "is not null"));
+                        Log.v(TAG, "expandedPosition = " + String.valueOf(expandedPosition));
+                        Log.v(TAG, "position = " + String.valueOf(position));
+
+                        // collapse expanded layout if any
+                        if (expandedPosition >= 0 && activity.get() != null) {
+                            collapseAllItemsSettings();
                         }
-                    } else {
-                        // reset expandedPosition if there is no expanded position
-                        expandedPosition = -1;
-                    }
-                    notifyDataSetChanged();
-                }
-            };
-            holder.name.setOnClickListener(listener);
-            holder.userpic.setOnClickListener(listener);
 
+                        // expand clicked item if required
+                        if (position != expandedPosition && finalView != null) {
+                            View settingsLayout = finalView.findViewById(
+                                    R.id.people_list_item_settings_layout);
+                            if (settingsLayout != null) {
+                                LinearLayoutExpandCollapseAnimation.expand(settingsLayout);
+                                expandedPosition = position;
+                                Log.v(TAG, "expand(View view) started");
+                            }
+                        } else {
+                            // reset expandedPosition if there is no expanded position
+                            expandedPosition = -1;
+                        }
+                        notifyDataSetChanged();
+                    }
+                };
+                holder.name.setOnClickListener(listener);
+                holder.userpic.setOnClickListener(listener);
+
+            }
         }
         return resultView;
     }
@@ -222,14 +224,35 @@ public class PeopleListAdapter extends BaseAdapter {
         }
     }
 
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
+        this.notifyDataSetChanged();
+    }
+
+    public void clearList() {
+        this.users.clear();
+        this.notifyDataSetChanged();
+    }
+
     public void onDeleteButtonClick(final int position, LinearLayout settingsLayout) {
         // TODO: implement method
+        if (users == null || position >= users.size()) {
+            // Error. This must not be the case
+            return;
+        }
+
+        final User user = users.get(position);
+        this.remove(position);
+        this.notifyDataSetChanged();
+
 
         Snackbar.make(activity.get().findViewById(R.id.people_parent_layout),"Deleting user",Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        // UNDO pressed
+                        users.add(position, user);
+                        PeopleListAdapter.this.notifyDataSetChanged();
                     }
                 })
                 .setCallback(new Snackbar.Callback() {
@@ -244,21 +267,13 @@ public class PeopleListAdapter extends BaseAdapter {
 
                             if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
                                 // NOT UNDONE
-                                // delete from list view adapter
-                                // TODO: make it delete first, then ask if want it undone
-                                PeopleListAdapter.this.remove(position);
                                 // mark deleted from local database
-                                if (users != null && users.get(position) != null) {
-                                    if (!new UserSqlOperations(activity.get())
-                                            .deleteById(users.get(position).getId())) {
-                                        Toast.makeText(
-                                                activity.get(),
-                                                "Can't delete item from the database",
-                                                Toast.LENGTH_LONG)
-                                                .show();
-                                    }
-                                }
+                                new UserSqlOperations(activity.get())
+                                        .deleteById(user.getId());
                                 // TODO: delete from server
+                                Toast.makeText(activity.get(),
+                                        "Follower not actually deleted on server for debugging purposes",
+                                        Toast.LENGTH_SHORT).show();
                                 // if error, show snackbar with RETRY action
                             }
                         }
@@ -271,7 +286,7 @@ public class PeopleListAdapter extends BaseAdapter {
                             FloatingActionButton fab =
                                     (FloatingActionButton) activity.get()
                                             .findViewById(R.id.fab_people);
-                            fab.hide();
+                            //fab.hide();
                         }
                     }
                 }).show();
@@ -289,11 +304,11 @@ public class PeopleListAdapter extends BaseAdapter {
             if (users != null && users.get(position) != null && listView != null
                     && (position - listView.getFirstVisiblePosition()) >= 0
                     && (position - listView.getFirstVisiblePosition()) < users.size()) {
-                final boolean isFollowed = users.get(position).isFollowed();
-                final boolean isShareFeeling = users.get(position).isShareFeeling();
+                final boolean isFollowed = users.get(position).getFollowed();
+                final boolean isShareFeeling = users.get(position).getShareFeeling();
                 final boolean isShareBloodSugar = users.get(position).isShareBloodSugar();
-                final boolean isShareInsulin = users.get(position).isShareInsulin();
-                final boolean isShareQuestion = users.get(position).isShareQuestions();
+                final boolean isShareInsulin = users.get(position).getShareInsulin();
+                final boolean isShareQuestion = users.get(position).getShareQuestions();
 
                 CheckBox isFollowedCheckBox =
                         (CheckBox) listView.getChildAt(position - listView.getFirstVisiblePosition())
@@ -312,7 +327,7 @@ public class PeopleListAdapter extends BaseAdapter {
                                 .findViewById(R.id.people_list_item_share_questions);
 
                 final User user = users.get(position);
-                user.setIsFollowed(isFollowedCheckBox.isChecked());
+                user.setFollowed(isFollowedCheckBox.isChecked());
                 user.setShareFeeling(isShareFeelingCheckBox.isChecked());
                 user.setShareBloodSugar(isShareBloodSugarCheckBox.isChecked());
                 user.setShareInsulin(isShareInsulinCheckBox.isChecked());
@@ -326,7 +341,7 @@ public class PeopleListAdapter extends BaseAdapter {
                                 @Override
                                 public void onClick(View view) {
                                     // prepare user values for update
-                                    user.setIsFollowed(isFollowed);
+                                    user.setFollowed(isFollowed);
                                     user.setShareFeeling(isShareFeeling);
                                     user.setShareBloodSugar(isShareBloodSugar);
                                     user.setShareInsulin(isShareInsulin);
@@ -358,7 +373,7 @@ public class PeopleListAdapter extends BaseAdapter {
                             super.onShown(snackbar);
                             FloatingActionButton fab = (FloatingActionButton)
                                     activity.get().findViewById(R.id.fab_people);
-                            fab.hide();
+                            //fab.hide();
                         }
                     }).show();
                 }

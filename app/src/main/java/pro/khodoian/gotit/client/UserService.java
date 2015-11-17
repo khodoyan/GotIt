@@ -2,7 +2,10 @@ package pro.khodoian.gotit.client;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import pro.khodoian.gotit.models.SignupUser;
+import pro.khodoian.gotit.models.User;
 import pro.khodoian.gotit.models.UserClient;
 import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.retrofit.AccessPoint;
@@ -49,6 +52,12 @@ public class UserService {
         void onFailure();
     }
 
+    public interface GetFollowersListener {
+        void onSuccess(ArrayList<User> users);
+        void onUnauthorized();
+        void onFailure();
+    }
+
     public UserService(AuthenticationDetailsManager authManager) {
         if (authManager.getToken() != null && !authManager.getToken().equals("")) {
             authorisedUsersService = getAuthorisedService(authManager.getToken());
@@ -65,13 +74,13 @@ public class UserService {
                 .create(UsersProxy.class);
     }
 
-    private UsersProxy getAuthorisedService(String token) {
+    public UsersProxy getAuthorisedService(String token) {
         return new SecuredRestAdapter()
                 .setLoginEndpoint(AccessPoint.ENDPOINT + AccessPoint.TOKEN_PATH)
                 .setToken(token)
                 .setClient(new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()))
                 .setEndpoint(AccessPoint.ENDPOINT)
-                .setLogLevel(RestAdapter.LogLevel.NONE)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build()
                 .create(UsersProxy.class);
     }
@@ -158,6 +167,34 @@ public class UserService {
                     Log.e(TAG, "Callback.success started");
                     if (response != null && response.getStatus() == HttpStatus.SC_OK)
                         callbacks.onSuccess(user);
+                    else if (response != null
+                            && (response.getStatus() == HttpStatus.SC_UNAUTHORIZED
+                            || response.getStatus() == HttpStatus.SC_BAD_REQUEST))
+                        callbacks.onUnauthorized();
+                    else
+                        callbacks.onFailure();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e(TAG, "Callback.failure started");
+                    callbacks.onFailure();
+                }
+            });
+        } else {
+            Log.e(TAG, "Couldn't create authorised service for some reason");
+            callbacks.onFailure();
+        }
+    }
+
+    public void getFollowers(final GetFollowersListener callbacks) {
+        if (authorisedUsersService != null) {
+            authorisedUsersService.getFollowers(new Callback<ArrayList<User>>() {
+                @Override
+                public void success(ArrayList<User> users, Response response) {
+                    Log.e(TAG, "Callback.success started");
+                    if (response != null && response.getStatus() == HttpStatus.SC_OK)
+                        callbacks.onSuccess(users);
                     else if (response != null
                             && (response.getStatus() == HttpStatus.SC_UNAUTHORIZED
                             || response.getStatus() == HttpStatus.SC_BAD_REQUEST))

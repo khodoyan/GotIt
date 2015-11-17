@@ -2,7 +2,6 @@ package pro.khodoian.gotit.models;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 
@@ -18,18 +17,18 @@ import pro.khodoian.gotit.sql.UserContract;
  * @author eduardkhodoyan
  */
 public class User implements ToContentValues {
-    private long id;
-    private boolean isPatient;
-    private String username;
+    private transient long id;
+    private transient boolean isPatient;
+    private String follower;
     private String firstName;
     private String lastName;
-    private long birthDay;
-    private String medicalRecordNumber;
+    private transient long birthDay;
+    private transient String medicalRecordNumber;
     private String userpicFilename;
-    private Drawable userpic;
-    private boolean isConfirmedByYou;
-    private boolean isConfirmedByFriend;
-    private boolean isFollowed;
+    private transient Drawable userpic;
+    private boolean confirmedByPatient;
+    private boolean confirmedByFollower;
+    private boolean followed;
     private boolean shareFeeling;
     private boolean shareBloodSugar;
     private boolean shareInsulin;
@@ -38,46 +37,46 @@ public class User implements ToContentValues {
     public User() {
     }
 
-    public User(boolean isPatient, String username, String firstName, String lastName,
+    public User(boolean isPatient, String follower, String firstName, String lastName,
                 long birthDay, String medicalRecordNumber, String userpicFilename,
-                boolean isConfirmedByYou, boolean isConfirmedByFriend) {
+                boolean confirmedByPatient, boolean confirmedByFollower) {
         this.isPatient = isPatient;
-        this.username = username;
+        this.follower = follower;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDay = birthDay;
         this.medicalRecordNumber = medicalRecordNumber;
         this.userpicFilename = userpicFilename;
-        this.isConfirmedByYou = isConfirmedByYou;
-        this.isConfirmedByFriend = isConfirmedByFriend;
+        this.confirmedByPatient = confirmedByPatient;
+        this.confirmedByFollower = confirmedByFollower;
     }
 
     public User(boolean isPatient,
-                String username,
+                String follower,
                 String firstName,
                 String lastName,
                 long birthDay,
                 String medicalRecordNumber,
                 String userpicFilename,
                 Drawable userpic,
-                boolean isConfirmedByYou,
-                boolean isConfirmedByFriend,
-                boolean isFollowed,
+                boolean confirmedByPatient,
+                boolean confirmedByFollower,
+                boolean followed,
                 boolean shareFeeling,
                 boolean shareBloodSugar,
                 boolean shareInsulin,
                 boolean shareQuestions) {
         this.isPatient = isPatient;
-        this.username = username;
+        this.follower = follower;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDay = birthDay;
         this.medicalRecordNumber = medicalRecordNumber;
         this.userpicFilename = userpicFilename;
         this.userpic = userpic;
-        this.isConfirmedByYou = isConfirmedByYou;
-        this.isConfirmedByFriend = isConfirmedByFriend;
-        this.isFollowed = isFollowed;
+        this.confirmedByPatient = confirmedByPatient;
+        this.confirmedByFollower = confirmedByFollower;
+        this.followed = followed;
         this.shareFeeling = shareFeeling;
         this.shareBloodSugar = shareBloodSugar;
         this.shareInsulin = shareInsulin;
@@ -98,9 +97,9 @@ public class User implements ToContentValues {
         else
             return null;
 
-        // username
+        // follower
         if (cursor.getColumnIndex(UserContract.Columns.USERNAME) >= 0)
-            result.username = cursor.getString(
+            result.follower = cursor.getString(
                     cursor.getColumnIndex(UserContract.Columns.USERNAME));
         else
             return null;
@@ -143,23 +142,23 @@ public class User implements ToContentValues {
         // userpic to be assigned separately
         result.userpic = null;
 
-        // isConfirmedByYou
+        // confirmedByPatient
         if (cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_YOU) >= 0)
-            result.isConfirmedByYou = (cursor.getInt(
+            result.confirmedByPatient = (cursor.getInt(
                     cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_YOU)) == 1);
         else
             return null;
 
-        // isConfirmedByFriend
+        // confirmedByFollower
         if (cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_FRIEND) >= 0)
-            result.isConfirmedByFriend = (cursor.getInt(
+            result.confirmedByFollower = (cursor.getInt(
                     cursor.getColumnIndex(UserContract.Columns.IS_CONFIRMED_BY_FRIEND)) == 1);
         else
             return null;
 
-        // isFollowed
+        // getFollowed
         if (cursor.getColumnIndex(UserContract.Columns.IS_FOLLOWED) >= 0)
-            result.isFollowed = (cursor.getInt(
+            result.followed = (cursor.getInt(
                     cursor.getColumnIndex(UserContract.Columns.IS_FOLLOWED)) == 1);
         else
             return null;
@@ -211,12 +210,12 @@ public class User implements ToContentValues {
         this.isPatient = isPatient;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFollower() {
+        return follower;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFollower(String follower) {
+        this.follower = follower;
     }
 
     public String getFirstName() {
@@ -259,20 +258,20 @@ public class User implements ToContentValues {
         this.userpicFilename = userpicFilename;
     }
 
-    public boolean isConfirmedByYou() {
-        return isConfirmedByYou;
+    public boolean getConfirmedByPatient() {
+        return confirmedByPatient;
     }
 
-    public void setIsConfirmedByYou(boolean isConfirmedByYou) {
-        this.isConfirmedByYou = isConfirmedByYou;
+    public void setConfirmedByPatient(boolean confirmedByPatient) {
+        this.confirmedByPatient = confirmedByPatient;
     }
 
-    public boolean isConfirmedByFriend() {
-        return isConfirmedByFriend;
+    public boolean getConfirmedByFollower() {
+        return confirmedByFollower;
     }
 
-    public void setIsConfirmedByFriend(boolean isConfirmedByFriend) {
-        this.isConfirmedByFriend = isConfirmedByFriend;
+    public void setConfirmedByFriend(boolean confirmedByFriend) {
+        this.confirmedByFollower = confirmedByFriend;
     }
 
     public Drawable getUserpic() {
@@ -283,15 +282,15 @@ public class User implements ToContentValues {
         this.userpic = userpic;
     }
 
-    public boolean isFollowed() {
-        return isFollowed;
+    public boolean getFollowed() {
+        return followed;
     }
 
-    public void setIsFollowed(boolean isFollowed) {
-        this.isFollowed = isFollowed;
+    public void setFollowed(boolean isFollowed) {
+        this.followed = isFollowed;
     }
 
-    public boolean isShareFeeling() {
+    public boolean getShareFeeling() {
         return shareFeeling;
     }
 
@@ -307,7 +306,7 @@ public class User implements ToContentValues {
         this.shareBloodSugar = shareBloodSugar;
     }
 
-    public boolean isShareInsulin() {
+    public boolean getShareInsulin() {
         return shareInsulin;
     }
 
@@ -315,7 +314,7 @@ public class User implements ToContentValues {
         this.shareInsulin = shareInsulin;
     }
 
-    public boolean isShareQuestions() {
+    public boolean getShareQuestions() {
         return shareQuestions;
     }
 
@@ -332,22 +331,22 @@ public class User implements ToContentValues {
                 fullName += " ";
             fullName += this.lastName;
         if (fullName.equals(""))
-            fullName = this.username;
+            fullName = this.follower;
         return fullName;
     }
 
     public ContentValues toContentValues() {
         ContentValues values = new ContentValues();
-        values.put(UserContract.Columns.USERNAME, this.username);
+        values.put(UserContract.Columns.USERNAME, this.follower);
         values.put(UserContract.Columns.IS_PATIENT, this.isPatient ? 1 : 0);
         values.put(UserContract.Columns.USERPIC_FILENAME, this.userpicFilename);
         values.put(UserContract.Columns.BIRTHDAY, this.birthDay);
         values.put(UserContract.Columns.FIRSTNAME, this.firstName);
         values.put(UserContract.Columns.LASTNAME, this.lastName);
         values.put(UserContract.Columns.MEDICAL_RECORD_NUMBER, this.medicalRecordNumber);
-        values.put(UserContract.Columns.IS_CONFIRMED_BY_YOU, this.isConfirmedByYou ? 1 : 0);
-        values.put(UserContract.Columns.IS_CONFIRMED_BY_FRIEND, this.isConfirmedByFriend ? 1 : 0);
-        values.put(UserContract.Columns.IS_FOLLOWED, this.isFollowed ? 1 : 0);
+        values.put(UserContract.Columns.IS_CONFIRMED_BY_YOU, this.confirmedByPatient ? 1 : 0);
+        values.put(UserContract.Columns.IS_CONFIRMED_BY_FRIEND, this.confirmedByFollower ? 1 : 0);
+        values.put(UserContract.Columns.IS_FOLLOWED, this.followed ? 1 : 0);
         values.put(UserContract.Columns.SHARE_FEELING, this.shareFeeling ? 1 : 0);
         values.put(UserContract.Columns.SHARE_BLOOD_SUGAR, this.shareBloodSugar ? 1 : 0);
         values.put(UserContract.Columns.SHARE_INSULIN, this.shareInsulin ? 1 : 0);
@@ -357,8 +356,8 @@ public class User implements ToContentValues {
 
     @Override
     public String toString() {
-        return String.format("User{username=%s; full name = %s}", new String[]{
-                this.username, this.getFullName()
+        return String.format("User{follower=%s; full name = %s}", new String[]{
+                this.follower, this.getFullName()
         });
     }
 
@@ -366,7 +365,7 @@ public class User implements ToContentValues {
         ArrayList<User> samplePeopleList = new ArrayList<>();
         samplePeopleList.add(new User(
                 true, // isPatient
-                "mike", // username
+                "mike", // follower
                 "Mike", // firstName
                 "Johnson", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -375,9 +374,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                false, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                false, // getFollowed
                 false, // shareFeeling
                 false, // shareBloodSugar
                 false, // shareInsulin
@@ -386,7 +385,7 @@ public class User implements ToContentValues {
 
         samplePeopleList.add(new User(
                 true, // isPatient
-                "jane", // username
+                "jane", // follower
                 "Jane", // firstName
                 "Smith", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -395,9 +394,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                true, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                true, // getFollowed
                 true, // shareFeeling
                 true, // shareBloodSugar
                 true, // shareInsulin
@@ -406,7 +405,7 @@ public class User implements ToContentValues {
 
         samplePeopleList.add(new User(
                 false, // isPatient
-                "jules", // username
+                "jules", // follower
                 "Jules", // firstName
                 "Santori", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -415,9 +414,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                false, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                false, // getFollowed
                 true, // shareFeeling
                 true, // shareBloodSugar
                 true, // shareInsulin
@@ -426,7 +425,7 @@ public class User implements ToContentValues {
 
         samplePeopleList.add(new User(
                 false, // isPatient
-                "kate", // username
+                "kate", // follower
                 "Kate", // firstName
                 "Patel", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -435,9 +434,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                true, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                true, // getFollowed
                 false, // shareFeeling
                 true, // shareBloodSugar
                 true, // shareInsulin
@@ -446,7 +445,7 @@ public class User implements ToContentValues {
 
         samplePeopleList.add(new User(
                 false, // isPatient
-                "den", // username
+                "den", // follower
                 "Den", // firstName
                 "James", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -455,9 +454,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                true, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                true, // getFollowed
                 true, // shareFeeling
                 false, // shareBloodSugar
                 true, // shareInsulin
@@ -466,7 +465,7 @@ public class User implements ToContentValues {
 
         samplePeopleList.add(new User(
                 false, // isPatient
-                "sam", // username
+                "sam", // follower
                 "Sam", // firstName
                 "Black", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -475,9 +474,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                true, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                true, // getFollowed
                 true, // shareFeeling
                 true, // shareBloodSugar
                 false, // shareInsulin
@@ -486,7 +485,7 @@ public class User implements ToContentValues {
 
         samplePeopleList.add(new User(
                 false, // isPatient
-                "terry", // username
+                "terry", // follower
                 "Terry", // firstName
                 "Brown", // lastName
                 new GregorianCalendar().getTimeInMillis(), // birthday
@@ -495,9 +494,9 @@ public class User implements ToContentValues {
                 (activity != null)
                         ? activity.getDrawable(R.drawable.ic_user_default)
                         : null,
-                true, //isConfirmedByYou
-                true, // isConfirmedByFriend
-                true, // isFollowed
+                true, //confirmedByPatient
+                true, // confirmedByFollower
+                true, // getFollowed
                 true, // shareFeeling
                 true, // shareBloodSugar
                 true, // shareInsulin

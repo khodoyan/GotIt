@@ -98,7 +98,7 @@
 
     <string name="signup_toast_username_not_blank">Username should not be blank</string>
     <string name="signup_toast_password_too_short">Password is too short. Please enter 6 characters at least</string>
-    <string name="signup_toast_username_busy">This username is busy, please try another one</string>
+    <string name="signup_toast_username_busy">This follower is busy, please try another one</string>
     <string name="signup_toast_incorrect_input">Input is incorrect, please correct and try again</string>
     <string name="signup_toast_cant_signup">Error signing up, please check inputs and try again later</string>
     <string name="signup_toast_no_access">Can\'t access remote server, please check internet connection</string>

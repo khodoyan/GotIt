@@ -59,6 +59,7 @@ public class SplashActivity extends AppCompatActivity {
                             authManager.setUserDetails(user);
                             if (status != null)
                                 status.setText(R.string.splash_loading_posts_and_people);
+                            // TODO: request people and posts
                             // set alarms
                             if (authManager.isPatient()) {
                                 new AlarmsManager(SplashActivity.this).setAlarmsIfNotSet();
