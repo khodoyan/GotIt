@@ -37,10 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.client.UnsafeHttpsClient;
 import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 import pro.khodoian.gotit.client.GetTokenRequest;
 import pro.khodoian.gotit.client.UserService;
 import retrofit.client.ApacheClient;
+import retrofit.client.OkClient;
 
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_CONTACTS;
@@ -270,7 +272,8 @@ public class LoginActivity extends AppCompatActivity
                 protected Void doInBackground(Void... voids) {
                     // userService = new UserService(email, password);
                     // userService.checkLogin(LoginActivity.this);
-                    GetTokenRequest.getAccessToken(new ApacheClient(),
+                    GetTokenRequest.getAccessToken(
+                            new OkClient(UnsafeHttpsClient.getUnsafeOkHttpClient()),
                             email, password, LoginActivity.this);
                     return null;
                 }

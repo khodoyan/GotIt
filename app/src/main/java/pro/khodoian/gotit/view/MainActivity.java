@@ -151,6 +151,11 @@ public class MainActivity extends AppCompatActivity
 
         if (postServiceConnected && postService != null)
             updateFeed();
+
+        // check privileges and show/hide floating action button
+        checkPatientPrivilegesAndShowOrHideFAB();
+
+        // TODO: hide checkin item in drawer menu
     }
 
     @Override
@@ -358,5 +363,13 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
+    }
+
+    public void checkPatientPrivilegesAndShowOrHideFAB() {
+        AuthenticationDetailsManager authManager = new AuthenticationDetailsManager(this);
+        if (!authManager.isPatient())
+            fab.hide();
+        else
+            fab.show();
     }
 }

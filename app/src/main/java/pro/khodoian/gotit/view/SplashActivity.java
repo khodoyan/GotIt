@@ -60,7 +60,11 @@ public class SplashActivity extends AppCompatActivity {
                             if (status != null)
                                 status.setText(R.string.splash_loading_posts_and_people);
                             // set alarms
-                            new AlarmsManager(SplashActivity.this).setAlarmsIfNotSet();
+                            if (authManager.isPatient()) {
+                                new AlarmsManager(SplashActivity.this).setAlarmsIfNotSet();
+                            } else {
+                                new AlarmsManager(SplashActivity.this).cancelAlarms();
+                            }
                             startMainActivityAndFinish();
                         }
 

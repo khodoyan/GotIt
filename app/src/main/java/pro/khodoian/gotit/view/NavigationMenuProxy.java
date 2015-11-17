@@ -3,10 +3,12 @@ package pro.khodoian.gotit.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
 import pro.khodoian.gotit.R;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 
 /**
  * Class for managing navigation menu
@@ -42,19 +44,23 @@ public class NavigationMenuProxy {
         }
     }
 
-    public void addPosts() {
-
-    }
-
     public void startCheckinActivity() {
-        Intent intent;
-        if (activity.get() != null && !(activity.get() instanceof CheckinActivity)) {
-            intent = CheckinActivity.makeIntent(activity.get());
-            if (activity.get() instanceof MainActivity)
-                activity.get().startActivityForResult(intent, CheckinActivity.REQUEST_CODE);
-            else
-                activity.get().startActivity(intent);
-        }
+        // check if user is a patient. If not, checkin activity shall not be started
+        if (activity.get() != null)
+            if (new AuthenticationDetailsManager(activity.get()).isPatient()) {
+                // start CheckinActivity
+                Intent intent;
+                if (activity.get() != null && !(activity.get() instanceof CheckinActivity)) {
+                    intent = CheckinActivity.makeIntent(activity.get());
+                    if (activity.get() instanceof MainActivity)
+                        activity.get().startActivityForResult(intent, CheckinActivity.REQUEST_CODE);
+                    else
+                        activity.get().startActivity(intent);
+                }
+            } else {
+                Toast.makeText(activity.get(), R.string.check_in_have_to_be_patient,
+                        Toast.LENGTH_LONG).show();
+            }
     }
 
     public void startPeopleActivity() {

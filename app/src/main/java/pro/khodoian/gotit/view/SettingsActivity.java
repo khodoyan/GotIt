@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -16,6 +17,7 @@ import java.util.GregorianCalendar;
 import pro.khodoian.gotit.R;
 import pro.khodoian.gotit.preferences.AlarmsManager;
 import pro.khodoian.gotit.preferences.AlarmsSettingsManager;
+import pro.khodoian.gotit.preferences.AuthenticationDetailsManager;
 
 public class SettingsActivity extends AppCompatActivity
         implements TimePickerFragment.Listener{
@@ -79,6 +81,17 @@ public class SettingsActivity extends AppCompatActivity
                 }
             }
         });
+
+        // check user to have patient privileges
+        if (!(new AuthenticationDetailsManager(SettingsActivity.this).isPatient())) {
+            enableNotificationsSwitch.setChecked(false);
+            enableNotificationsSwitch.setEnabled(false);
+            morningButton.setEnabled(false);
+            afternoonButton.setEnabled(false);
+            eveningButton.setEnabled(false);
+            TextView description = (TextView) findViewById(R.id.settings_description);
+            description.setText(R.string.settings_you_are_not_a_patient);
+        }
 
     }
 
