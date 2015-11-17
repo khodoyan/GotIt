@@ -179,9 +179,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Menu is not inflated as it is replaced with the drawer
-        // getMenuInflater().inflate(R.menu.main, menu);
-        return false;
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
@@ -191,8 +190,12 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        // logout pressed
+        if (id == R.id.action_logout) {
+            AuthenticationDetailsManager authManager = new AuthenticationDetailsManager(this);
+            authManager.clearAll();
+            startActivity(SplashActivity.makeIntent(this));
+            finish();
             return true;
         }
 

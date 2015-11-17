@@ -106,4 +106,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    public static Intent makeIntent(Context context) {
+        return new Intent(context, SplashActivity.class);
+    }
 }

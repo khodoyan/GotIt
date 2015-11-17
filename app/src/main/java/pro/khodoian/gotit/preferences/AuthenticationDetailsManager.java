@@ -54,6 +54,19 @@ public class AuthenticationDetailsManager {
         }
     }
 
+    public void clearAll() {
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove(KEY_USERNAME);
+            editor.remove(KEY_PASSWORD);
+            editor.remove(KEY_TOKEN);
+            editor.remove(KEY_FIRSTNAME);
+            editor.remove(KEY_LASTNAME);
+            editor.remove(KEY_IS_PATIENT);
+            editor.commit();
+        }
+    }
+
     public void clearCredentials() {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
